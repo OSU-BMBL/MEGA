@@ -1,0 +1,13 @@
+{
+	"_NOTE": "pyMETA VSCode settings",
+	// "terminal.integrated.cwd": "pyproject",
+	"code-runner.cwd": "pyMEGA",
+	"python.defaultInterpreterPath": "~/micromamba/envs/daniel_gpu_mamba/bin/python",
+	"editor.rulers": [
+		79
+	],
+	"python.formatting.provider": "black",
+	"python.linting.enabled": true,
+	"python.linting.pylintEnabled": true,
+	"python.linting.flake8Enabled": true
+}

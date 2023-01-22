@@ -1,0 +1,4 @@
+"""
+pyMEGA initialization module.
+"""
+
