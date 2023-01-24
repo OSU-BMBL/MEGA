@@ -2,9 +2,6 @@
 pyMEGA initialization module.
 """
 import logging
-from . import _version
-
-__version__ = _version.get_versions()["version"]
 
 from .log import create_logging_handler
 
@@ -15,5 +12,4 @@ LOGGER.addHandler(create_logging_handler(LOGGING_DEBUG_OPT))
 LOGGER.setLevel(logging.DEBUG)
 
 from . import _version
-
-__version__ = _version.get_versions()["version"]
+__version__ = _version.get_versions()['version']
