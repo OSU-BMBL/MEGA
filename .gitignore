@@ -1,5 +1,6 @@
 # Test script
 build.sh
+test.sh
 
 # Compiled python code
 ~.pyc
