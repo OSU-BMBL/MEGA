@@ -6,6 +6,8 @@ pyMEGA is a deep learning package for identifying cancer-associated tissue-resid
 
 If you have any questions or feedback, please contact Qin Ma <qin.ma@osumc.edu>.
 
+https://pypi.org/project/pyMEGA/
+
 ## dev environment
 
 ```{bash}
