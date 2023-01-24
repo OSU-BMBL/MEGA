@@ -21,7 +21,7 @@ from torch import nn, optim
 from torch.nn import functional as F
 
 # from kneed import KneeLocator   # 这个在后面并没有用到
-import torch.utils.data as data
+import torch.utils.data as torchdata
 
 from warnings import filterwarnings
 
@@ -374,7 +374,7 @@ def micah(args):
         gene = torch.tensor(train_cell, dtype=torch.float32).to(device)
 
         ba = train_cell.shape[0]
-        loader1 = data.DataLoader(
+        loader1 = torchdata.DataLoader(
             gene, ba
         )  # 这里为什么gene的loader1(365-397行)与cell的loader2(399-425行)不一样？？
 
@@ -424,8 +424,8 @@ def micah(args):
         ba2 = test_cell.shape[1]
         cell1 = torch.tensor(test_cell.T, dtype=torch.float32).to(device)
         # 这里是将gene_cell矩阵转置,即使得每次进入AE中的都是矩阵中的行向量
-        loader2 = data.DataLoader(cell, ba1)
-        loader3 = data.DataLoader(cell1, ba2)
+        loader2 = torchdata.DataLoader(cell, ba1)
+        loader3 = torchdata.DataLoader(cell1, ba2)
         model2 = AE(dim=train_cell.shape[0]).to(device)
         optimizer2 = optim.Adam(model2.parameters(), lr=1e-3)  # ,weight_decay=1e-2)
         EPOCH_AE2 = 250
