@@ -10,7 +10,8 @@ The pacakge is also available on PyPI: https://pypi.org/project/pyMEGA/
 
 ## News
 
-## v0.0.1 1/24/2023
+### v0.0.1 - 1/24/2023
+Added:
 1. GitHub published: https://github.com/OSU-BMBL/pyMEGA
 2. PyPI published: https://pypi.org/project/pyMEGA/
 
@@ -41,9 +42,9 @@ The following packages and versions are required to run pyMEGA:
 
 Note: It is **highly suggested** to install the dependencies using [micromamba](https://mamba.readthedocs.io/en/latest/installation.html#install-script) (about 10 mins) rather than ```conda``` (could take more than 2 hours)
 
-**if you have GPU available: check [GPU version (CUDA 10.2)]()**
+**if you have GPU available: check [GPU version (CUDA 10.2)](#gpu-version-cuda-102)**
 
-**if you only have CPU available: check [CPU version]()**
+**if you only have CPU available: check [CPU version](#cpu-version)**
 
 ### GPU version (CUDA 10.2)
 
