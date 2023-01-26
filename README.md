@@ -57,7 +57,6 @@ micromamba create -n pyMEGA_env python=3.7 -y
 
 ```{bash}
 micromamba activate pyMEGA_env
-
 ```
 
 3. install ```pytorch v1.4.0```
@@ -75,9 +74,7 @@ pip install dill kneed imblearn matplotlib tqdm seaborn pipx
 5. install ```torch-geometric for pytorch v1.4.0```
 
 ```{bash}
-
 pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-spline-conv==1.2.0 torch-geometric==1.4.3 -f https://data.pyg.org/whl/torch-1.4.0%2Bcu101.html
-
 ```
 
 6. install ```pyMEGA```
@@ -92,12 +89,63 @@ pyMEGA -h
 
 ### CPU version
 
-todo
+1. Create an virtual environment for pyMEGA
+
+```{bash}
+micromamba create -n pyMEGA_cpu_env python=3.7 -y
+```
+
+2. Activate ```pyMEGA_env```
+
+```{bash}
+micromamba activate pyMEGA_cpu_env
+```
+
+3. install ```pytorch v1.4.0```
+
+```{bash}
+micromamba install pytorch==1.4.0 -c pytorch -y
+```
+
+4. install other required packages from pip
+
+```{bash}
+pip install dill kneed imblearn matplotlib tqdm seaborn pipx
+```
+
+5. install ```torch-geometric for pytorch v1.4.0```
+
+```{bash}
+pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-spline-conv==1.2.0 torch-geometric==1.4.3 -f https://data.pyg.org/whl/torch-1.4.0%2Bcu101.html
+```
+
+6. install ```pyMEGA```
+```{bash}
+pip install pyMEGA
+```
+
+7. verify installation
+```{bash}
+pyMEGA -h
+```
 
 
-### Download example data
+### Input data
 
-todo
+#### Data format
+
+The first column represents the species IDs or official NCBI taxonomy names. The first row represents the sample names. pyMEGA will automatically try to convert the species name to IDs when needed.
+
+
+![](./img/input_abundance.png)
+
+#### Example data
+
+```cre_abundance_data.csv```: 995 species x 230 samples
+
+```
+wget cre_abundance_data.csv
+```
 
 ## Acknowledgements
 
