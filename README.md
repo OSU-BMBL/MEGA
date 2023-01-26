@@ -1,4 +1,4 @@
-# pyMEGA
+# pyMEGA <a href='https://github.com/OSU-BMBL/pyMEGA'><img src='img/logo.png' align="right" height="139" /></a>
 
 **Warning: This repository is under heavy development and the content is not final yet.**
 
