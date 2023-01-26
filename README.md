@@ -40,7 +40,7 @@ The following packages and versions are required to run pyMEGA:
 - torch-scatter==2.0.4
 - torch-sparse==0.6.1
 
-Note: It is **highly suggested** to install the dependencies using [micromamba](https://mamba.readthedocs.io/en/latest/installation.html#install-script) (about 10 mins) rather than ```conda``` (could take more than 2 hours)
+Note: It is **highly suggested** to install the dependencies using [micromamba](https://mamba.readthedocs.io/en/latest/installation.html#install-script) (about 10 mins) rather than ```conda``` (could take more than 2 hours). If you don't want to use micromamba, just simply replace ```micromamba``` with ```conda``` in the code below.
 
 **if you have GPU available: check [GPU version (CUDA 10.2)](#gpu-version-cuda-102)**
 
@@ -96,7 +96,7 @@ pyMEGA -h
 micromamba create -n pyMEGA_cpu_env python=3.7 -y
 ```
 
-2. Activate ```pyMEGA_env```
+2. Activate ```pyMEGA_cpu_env```
 
 ```{bash}
 micromamba activate pyMEGA_cpu_env
@@ -170,8 +170,8 @@ We will use the [example data](#example-data) for the following tutorial.
 
 Running time:
 
-- GPU version: ~ 15 mins
-- CPU version: ~ 50 mins
+- GPU version: about 15 mins
+- CPU version: about 60 mins
 
 ```{bash}
 pyMEGA -input1 cre_abundance_data.csv -input2 cre_metadata.csv
@@ -193,7 +193,7 @@ EPOCH=50
 KL_COEF=0.00005
 THRES=3
 
-pyMEGA -input1 cre_abundance_data.csv -input2 cre_metadata.csv -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -n_layers 2 -in_dim 256 -kl_coef ${KL_COEF} -cuda ${CUDA}
+pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -cuda ${CUDA}
 
 ```
 
