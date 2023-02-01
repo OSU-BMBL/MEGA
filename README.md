@@ -157,12 +157,12 @@ wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_ab
 wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_metadata.csv
 ```
 
-### How to run pyMEGA
+## How to run pyMEGA
 
 We will use the [example data](#example-data) for the following tutorial.
 
 
-#### Quick start
+### Quick start
 
 - ```input1```: the path to the abundance matrix
 - ```input2```: the path to the sample metadata
@@ -177,7 +177,7 @@ Running time:
 pyMEGA -input1 cre_abundance_data.csv -input2 cre_metadata.csv
 ```
 
-#### Enabling other parameters
+### Enabling other parameters
 
 use ```pyMEGA -h``` to check more details about parameters
 
@@ -197,7 +197,7 @@ pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -epoch ${EPOCH} -cuda ${CUDA} -n_hid 
 
 ```
 
-### Output files
+## Output files
 
 1. ```*_final_taxa.tsv``` : Cancer-associated microbal signatures. This is the final output file.
 
@@ -211,6 +211,9 @@ pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -epoch ${EPOCH} -cuda ${CUDA} -n_hid 
 
 5. ```*_attention.csv```: raw attention matrix extracted from deep learning model
 
+## Visualize results using Rcy3 and Cytoscape
+
+[Check Cytoscape_visualize.md](./Cytoscape_visualize.md)
 
 ## Acknowledgements
 
