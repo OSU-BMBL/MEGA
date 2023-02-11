@@ -213,7 +213,9 @@ pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -epoch ${EPOCH} -cuda ${CUDA} -n_hid 
 
 ## Visualize results using Rcy3 and Cytoscape
 
-[Check Cytoscape_visualize.md](./Cytoscape_visualize.md)
+Check the README file in ```./cytoscape``` folder:
+
+[./cytoscape/README.md](./cytoscape/README.md)
 
 ## Acknowledgements
 
