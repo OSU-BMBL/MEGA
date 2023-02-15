@@ -39,6 +39,8 @@ The following packages and versions are required to run pyMEGA:
 - torch-geometric==1.4.3
 - torch-scatter==2.0.4
 - torch-sparse==0.6.1
+- R > 4.0
+- taxizedb (An R package for NCBI database)
 
 Note: It is **highly suggested** to install the dependencies using [micromamba](https://mamba.readthedocs.io/en/latest/installation.html#install-script) (about 10 mins) rather than ```conda``` (could take more than 2 hours). If you don't want to use micromamba, just simply replace ```micromamba``` with ```conda``` in the code below.
 
@@ -83,7 +85,13 @@ pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-
 pip install pyMEGA
 ```
 
-7. verify the installation
+7. install ```R and taxizedb```
+
+```{bash}
+micromamba install R -y
+```
+
+8. verify the installation
 ```{bash}
 pyMEGA -h
 ```
@@ -126,7 +134,13 @@ pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-
 pip install pyMEGA
 ```
 
-7. verify the installation
+7. install ```R and taxizedb```
+
+```{bash}
+micromamba install R -y
+```
+
+8. verify the installation
 ```{bash}
 pyMEGA -h
 ```
@@ -151,16 +165,19 @@ pyMEGA -h
 
 ```cre_metadata.csv```: The sample labels of the corresponding abundance matrix. It has 230 rows (samples) and 2 columns
 
+```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393).
+
 ```{bash}
 wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_abundance_data.csv
 
 wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_metadata.csv
+
+wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/NJS16_metabolic_relation.txt
 ```
 
 ## How to run pyMEGA
 
 We will use the [example data](#example-data) for the following tutorial.
-
 
 ### Quick start
 
@@ -173,8 +190,16 @@ Running time:
 - GPU version: about 15 mins
 - CPU version: about 60 mins
 
+#### GPU version
+
 ```{bash}
-pyMEGA -input1 cre_abundance_data.csv -input2 cre_metadata.csv
+pyMEGA -cuda 0 -input1 /bmbl_data/cankun_notebook/daniel/pyMEGA/cre_abundance_data.csv -input2 /bmbl_data/cankun_notebook/daniel/pyMEGA/cre_metadata.csv -db /bmbl_data/cankun_notebook/daniel/pyMEGA/NJS16_metabolic_relation.txt
+```
+
+#### CPU version
+
+```{bash}
+pyMEGA -cuda -1 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt
 ```
 
 ### Enabling other parameters
@@ -185,7 +210,7 @@ use ```pyMEGA -h``` to check more details about parameters
 
 INPUT1=cre_abundance_data.csv
 INPUT2=cre_metadata.csv
-
+DB=NJS16_metabolic_relation.txt
 CUDA=0
 LR=0.003
 N_HID=128
@@ -193,7 +218,7 @@ EPOCH=50
 KL_COEF=0.00005
 THRES=3
 
-pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -cuda ${CUDA}
+pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -cuda ${CUDA}
 
 ```
 
@@ -225,5 +250,6 @@ Contributors:
 - Anjun Ma
 - Zhaoqian Liu
 - Yuhan Sun
+- Megan McNutt
 
 Contact us: Qin Ma <qin.ma@osumc.edu>.

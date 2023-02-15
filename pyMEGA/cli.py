@@ -19,6 +19,7 @@ import random
 import torch
 from torch import nn, optim
 from torch.nn import functional as F
+import subprocess
 
 # from kneed import KneeLocator   # 这个在后面并没有用到
 import torch.utils.data as torchdata
@@ -226,6 +227,146 @@ def props_to_onehot(props):
     b = np.zeros((len(a), props.shape[1]))
     b[np.arange(len(a)), a] = 1
     return b
+
+
+def metabolic_matrix(input, input_db="NJS16_metabolic_relation.txt"):
+    df = pd.read_csv(input, sep=",", index_col=0)
+    print("The number of species is", df.shape[0] - 1)
+    print("The number of samples is", df.shape[1])
+    species_list = df.index.values[: len(df) - 1].tolist()
+    species_list = map(
+        lambda x: str(x), species_list
+    )  # transfer the species id into str
+
+    # output file "*_metabolic_relation.tsv"
+    path = os.path.dirname(input)
+    file_name = (input).split("/")[-1].split(".")[0]
+    file_1 = path + "/" + file_name + "_njs16.csv"
+    file_2 = path + "/" + file_name + "_njs16_norm.txt"
+    file_3 = path + "/" + file_name + "_metabolic_matrix.csv"
+    file_4 = path + "/" + file_name + "_metabolic_relation.tsv"
+    file_5 = path + "/" + file_name + "_species_list.tsv"
+
+    # Need to be checked
+    df_njs16 = pd.read_csv(path + "/" + input_db, sep="\t")
+
+    # obtain the contained species and metabolic compound in NJS16
+    df_njs16 = df_njs16[df_njs16["taxonomy ID"].isin(species_list)]
+
+    df_njs16.to_csv(file_1, sep="\t", header=0, index=0)
+
+    # normalize the data: each compound is represented as a row
+    f = open(file_1)
+    w = open(file_2, "w")
+    y = f.readline()
+    while y:
+        y = y.strip()
+        lis = y.split("\t")
+        # print (lis)
+        if "&" in lis[0] and "," in lis[1]:
+            lis_1 = lis[0].split("&")
+            lis_2 = lis[1].split(",")
+            for j in range(len(lis_2)):
+                w.write(str(lis_1[0]) + "\t" + lis_2[j] + "\t" + lis[2] + "\n")
+                w.write("Production (export)" + "\t" + lis_2[j] + "\t" + lis[2] + "\n")
+        elif "&" in lis[0] and "," not in lis[1]:
+            lis_1 = lis[0].split("&")
+            w.write(str(lis_1[0]) + "\t" + lis[2] + "\t" + lis[2] + "\n")
+            w.write("Production (export)" + "\t" + lis[2] + "\t" + lis[2] + "\n")
+
+        elif "&" not in lis[0] and "," in lis[1]:
+            lis_2 = lis[1].split(",")
+            for j in range(len(lis_2)):
+                w.write(str(lis[0] + "\t" + lis_2[j] + "\t" + lis[2] + "\n"))
+        else:
+            w.write(str(lis[0] + "\t" + lis[1] + "\t" + lis[2] + "\n"))
+        y = f.readline()
+
+    f.close()
+    w.close()
+
+    # all relations are considered as equivalent
+    p = open(file_2)
+    w = open(file_4, "w")
+
+    dictionary = {}  # compound and species list. key is compound, and value is species
+    x = p.readline()
+    while x:
+        x = x.strip()
+        lis = x.split("\t")
+        dictionary.setdefault(lis[1], []).append(lis[2])
+        x = p.readline()
+
+    list_species_pair = []  # move replicates of species-species relations
+    for i, j in dictionary.items():
+        if len(dictionary[i]) != 1:
+            for k in range(len(j)):
+                for k_1 in range(len(j)):
+                    if set([j[k], j[k_1]]) not in list_species_pair:
+                        list_species_pair.append(set([j[k], j[k_1]]))
+                        w.write(str(j[k]) + "\t" + str(j[k_1]) + "\n")
+
+    p.close()
+    w.close()
+
+    # transfer into a metabolic relation matrix
+    species = df.index.values[: len(df) - 1]
+    species_list = pd.DataFrame(species)
+    species_list.to_csv(file_5, index=0, header=0)
+    species = species.astype("int")
+    species_metabolites = pd.read_csv(file_4, sep="\t", index_col=0)
+    species1 = species_metabolites.index.values
+    species2 = species_metabolites.values
+    species2 = species2.flatten()
+    matrix = np.zeros((len(species), len(species)))
+    for i, j in enumerate(species):
+        for m, n in enumerate(species1):
+            if n == j:
+                p = species2[m]
+                q = np.argwhere(species == p)  # species.index(p)
+                if i != q:
+                    matrix[i, q] = 1
+                    matrix[q, i] = 1
+
+    df3 = pd.DataFrame(matrix, index=list(species), columns=list(species))
+    df3.to_csv(file_3, sep=",")
+    print("The final metabolic relations among species and species is in", file_3)
+
+    os.remove(file_1)
+    os.remove(file_2)
+    os.remove(file_4)
+
+
+def phylo_matrix(input1, input2):
+    # output file "*_metabolic_relation.tsv"
+    path = os.path.dirname(input2)
+    file_name = (input2).split("/")[-1].split(".")[0]
+    file_3 = path + "/" + file_name + "_phy_matrix.csv"
+
+    species_species = pd.read_csv(input2, sep=",", index_col=0)
+    species = species_species.index.values[: len(species_species) - 1]
+    species = species.astype("int")
+    species_phylo = pd.read_csv(input1, sep="\t", index_col=0)
+    genus = species_phylo.index.values
+    genus_unrepeat = np.unique(genus)
+    species3 = species_phylo.values
+    matrix1 = np.zeros((len(species), len(species)))
+    for i in genus_unrepeat:
+        if i != 0:
+            p = np.argwhere(genus == i).flatten()
+            species4 = species3[p].flatten()
+            q = []
+            for n, m in enumerate(species):
+                for k, h in enumerate(species4):
+                    if h == m:
+                        q.append(n)
+            for j in q:
+                for g in q:
+                    if j != g:
+                        matrix1[j, g] = 1
+    df = pd.DataFrame(matrix1, index=list(species), columns=list(species))
+    df.to_csv(file_3, sep=",")
+    print("The final phylogenic relations among species and species is in", file_3)
 
 
 def micah(args):
@@ -1004,13 +1145,13 @@ def create_argument_parser():
     )
 
     parser.add_argument(
-        "-input_dir1", default=None, help="The absolute path of abundance matrix."
+        "-input1", default=None, help="The absolute path of abundance matrix."
     )
     parser.add_argument(
-        "-input_dir2", default=None, help="The absolute path of metabolic matrix."
+        "-input2", default=None, help="The absolute path of metadata of the abundance matrix."
     )
     parser.add_argument(
-        "-input_dir3", default=None, help="The absolute path of phylogenetic matrix."
+        "-db", default=None, help="The absolute path of Gut metebolic database."
     )
     # Feature extration
     parser.add_argument(
@@ -1118,10 +1259,11 @@ def main(argv=None):
     # Parse arguments.
     parser = create_argument_parser()
     args = parser.parse_args(args=argv)
-
     LOGGER.info(f"Your settings: {args}")
-    micah(args)
-
+    metabolic_matrix(args.input1)
+    subprocess.run("Rscript", "taxize.r", "./*species_list.tsv")
+    phylo_matrix("./*/*_phy_relation.csv", args.input1)
+    #micah(args)
 
 if __name__ == "__main__":
     main()

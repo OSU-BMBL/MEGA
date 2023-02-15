@@ -1,6 +1,11 @@
-# Test script
+
+
+# Test script and data
 build.sh
 test.sh
+cre*.csv
+cre*.tsv
+NJS16_metabolic_relation.txt
 
 # Compiled python code
 ~.pyc
