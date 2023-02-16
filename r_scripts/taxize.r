@@ -5,6 +5,7 @@ if(!require('taxizedb')) {
 options (warn = -1)
 Args <- commandArgs()
 
+# Args[6]: input file path
 data <- read.table(Args[6], header=F, sep="\n")
 taxa <- as.data.frame(matrix(1:(dim(data[1])*2), nrow = dim(data[1]), ncol = 2))
 
@@ -19,6 +20,7 @@ for (i in 1:dim(data)[1]){
 }
 
 file_name <- strsplit(basename(Args[6]),split="\\.")[[1]][1]
-file_a = paste(c(dirname(Args[6]),'/',file_name,'_phy_relation.csv'),collapse = "")
+file_a <- paste(c(dirname(Args[6]),'/',file_name,'_phy_relation.csv'),collapse = "")
+file_a <- gsub("_species_list", "", file_a)
 write.table(taxa, file_a, sep='\t', row.names = FALSE, col.names = FALSE, quote = F)
 # print (paste('The final metabolic relations among species and species is in', file_a))

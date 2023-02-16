@@ -193,13 +193,13 @@ Running time:
 #### GPU version
 
 ```{bash}
-pyMEGA -cuda 0 -input1 /bmbl_data/cankun_notebook/daniel/pyMEGA/cre_abundance_data.csv -input2 /bmbl_data/cankun_notebook/daniel/pyMEGA/cre_metadata.csv -db /bmbl_data/cankun_notebook/daniel/pyMEGA/NJS16_metabolic_relation.txt
+pyMEGA -cuda 0 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt -o ./out
 ```
 
 #### CPU version
 
 ```{bash}
-pyMEGA -cuda -1 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt
+pyMEGA -cuda -1 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt -o ./out
 ```
 
 ### Enabling other parameters
@@ -214,17 +214,17 @@ DB=NJS16_metabolic_relation.txt
 CUDA=0
 LR=0.003
 N_HID=128
-EPOCH=50
+EPOCH=30
 KL_COEF=0.00005
 THRES=3
-
-pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -cuda ${CUDA}
+OUTPUT=./out
+pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -o ${OUTPUT}
 
 ```
 
 ## Output files
 
-1. ```*_final_taxa.tsv``` : Cancer-associated microbal signatures. This is the final output file.
+1. ```*_final_taxa.txt``` : Cancer-associated microbal signatures. This is an unstructured txt file separated by tab. This is the final output file.
 
 ![](./img/output_tax.png)
 
@@ -248,10 +248,10 @@ Maintainer: [Cankun Wang](https://github.com/Wang-Cankun)
 
 Contributors:
 
-- [Cankun Wang](https://github.com/Wang-Cankun)
+- Cankun Wang
+- Megan McNutt
 - Anjun Ma
 - Zhaoqian Liu
 - Yuhan Sun
-- Megan McNutt
 
 Contact us: Qin Ma <qin.ma@osumc.edu>.

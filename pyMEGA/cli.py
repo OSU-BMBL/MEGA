@@ -7,6 +7,8 @@ from .pyHGT.data import *
 from .pyHGT.model import *
 
 import sys
+import math
+import time
 import argparse
 import logging
 import os
@@ -48,22 +50,36 @@ except:
 LOGGER = logging.getLogger(__name__)
 
 
-def load_data(path, sep, col_name, row_name):
+def load_data(path1, path2, sep, col_name, row_name):
+    """
+    Load a abundance matrix from a CSV file and return various components of the matrix as separate variables.
+
+    Parameters:
+        path1 (str): The file path of the CSV file containing the abundance matrix.
+        path2 (str): The file path of the CSV file containing sample cancer labels.
+        sep (str, optional): The delimiter used in the CSV file. Default is ','.
+        col_name (bool, optional): If True, the first column of the CSV file contains column names. Default is False.
+        row_name (bool, optional): If True, the first row of the CSV file contains row names. Default is False.
+
+    Returns:
+        A tuple of the following variables:
+        gene_cell_matrix1 (pandas.DataFrame): The abundance matrix after cleaning and filtering.
+        gene_cell_matrix (pandas.DataFrame): The original abundance matrix.
+        cell_label (pandas.DataFrame): The cell labels.
+        gene_cell (numpy.ndarray): The abundance matrix as a NumPy array.
+        gene_name (numpy.ndarray): The gene names.
+        cell_name (numpy.ndarray): The cell names.
+
+    """
     if col_name is True and row_name is True:
-        gene_cell_matrix = pd.read_csv(path, sep=sep, index_col=0)
+        gene_cell_matrix = pd.read_csv(path1, sep=sep, index_col=0)
+        cell_label = pd.read_csv(path2, sep=sep, index_col=0)
     gene_cell_matrix1 = gene_cell_matrix.dropna(axis=0)
-    gene_cell_matrix = gene_cell_matrix1[0 : len(gene_cell_matrix1) - 1]
-    cell_label = gene_cell_matrix1[len(gene_cell_matrix1) - 1 :].T
-    # cell_label = pd.get_dummies(cell_label.T)
+    gene_cell_matrix = gene_cell_matrix1
     gene_cell = gene_cell_matrix.values
-    gene_cell = gene_cell[0 : len(gene_cell_matrix1) - 1, :]
     gene_name = gene_cell_matrix.index.values
     cell_name = gene_cell_matrix.columns.values
-    LOGGER.info(
-        "The number of species is {}, and the number of samples is {}.".format(
-            gene_cell.shape[0], gene_cell.shape[1]
-        )
-    )
+
     return (
         gene_cell_matrix1,
         gene_cell_matrix,
@@ -229,26 +245,37 @@ def props_to_onehot(props):
     return b
 
 
-def metabolic_matrix(input, input_db="NJS16_metabolic_relation.txt"):
+def check_input_params(args):
+    # input is csv
+
+    # input and metadata label match
+
+    # input row is species ID
+
+    # output dir exist
+
+    return True
+
+
+def get_metabolic_matrix(input, out_dir, input_db="NJS16_metabolic_relation.txt"):
     df = pd.read_csv(input, sep=",", index_col=0)
-    print("The number of species is", df.shape[0] - 1)
-    print("The number of samples is", df.shape[1])
-    species_list = df.index.values[: len(df) - 1].tolist()
+    LOGGER.info(f"Number of species: {df.shape[0]}. Number of samples: {df.shape[1]}")
+
+    species_list = df.index.values.tolist()
     species_list = map(
         lambda x: str(x), species_list
     )  # transfer the species id into str
 
-    # output file "*_metabolic_relation.tsv"
-    path = os.path.dirname(input)
     file_name = (input).split("/")[-1].split(".")[0]
-    file_1 = path + "/" + file_name + "_njs16.csv"
-    file_2 = path + "/" + file_name + "_njs16_norm.txt"
-    file_3 = path + "/" + file_name + "_metabolic_matrix.csv"
-    file_4 = path + "/" + file_name + "_metabolic_relation.tsv"
-    file_5 = path + "/" + file_name + "_species_list.tsv"
+    # 1, 2, 4 will remove
+    file_1 = out_dir + "/" + file_name + "_njs16.csv"
+    file_2 = out_dir + "/" + file_name + "_njs16_norm.txt"
+    file_3 = out_dir + "/" + file_name + "_metabolic_matrix.csv"
+    file_4 = out_dir + "/" + file_name + "_metabolic_relation.tsv"
+    file_5 = out_dir + "/" + file_name + "_species_list.tsv"
 
     # Need to be checked
-    df_njs16 = pd.read_csv(path + "/" + input_db, sep="\t")
+    df_njs16 = pd.read_csv(input_db, sep="\t")
 
     # obtain the contained species and metabolic compound in NJS16
     df_njs16 = df_njs16[df_njs16["taxonomy ID"].isin(species_list)]
@@ -310,7 +337,7 @@ def metabolic_matrix(input, input_db="NJS16_metabolic_relation.txt"):
     w.close()
 
     # transfer into a metabolic relation matrix
-    species = df.index.values[: len(df) - 1]
+    species = df.index.values
     species_list = pd.DataFrame(species)
     species_list.to_csv(file_5, index=0, header=0)
     species = species.astype("int")
@@ -330,21 +357,21 @@ def metabolic_matrix(input, input_db="NJS16_metabolic_relation.txt"):
 
     df3 = pd.DataFrame(matrix, index=list(species), columns=list(species))
     df3.to_csv(file_3, sep=",")
-    print("The final metabolic relations among species and species is in", file_3)
+    LOGGER.info(f"The metabolic relations among species are saved in {file_3}")
 
     os.remove(file_1)
     os.remove(file_2)
     os.remove(file_4)
+    return file_5
 
 
-def phylo_matrix(input1, input2):
+def get_phylo_matrix(input1, input2, out_dir):
     # output file "*_metabolic_relation.tsv"
-    path = os.path.dirname(input2)
     file_name = (input2).split("/")[-1].split(".")[0]
-    file_3 = path + "/" + file_name + "_phy_matrix.csv"
+    file_3 = out_dir + "/" + file_name + "_phy_matrix.csv"
 
     species_species = pd.read_csv(input2, sep=",", index_col=0)
-    species = species_species.index.values[: len(species_species) - 1]
+    species = species_species.index.values
     species = species.astype("int")
     species_phylo = pd.read_csv(input1, sep="\t", index_col=0)
     genus = species_phylo.index.values
@@ -366,10 +393,10 @@ def phylo_matrix(input1, input2):
                         matrix1[j, g] = 1
     df = pd.DataFrame(matrix1, index=list(species), columns=list(species))
     df.to_csv(file_3, sep=",")
-    print("The final phylogenic relations among species and species is in", file_3)
+    LOGGER.info(f"The phylogenic relations among species are saved in {file_3}")
 
 
-def micah(args):
+def micah(args, out_dir, base_filename):
     # Set up folders
     file0 = (
         "pyMEGA_"
@@ -382,33 +409,36 @@ def micah(args):
         + str(args.lr)
     )
 
-    path = os.path.dirname(args.input_dir1)
-    file_name = (args.input_dir1).split("/")[-1].split(".")[0]
-    att_file1 = path + "/" + file_name + "_attention.csv"
-    path1 = path + "/temp"
-    model_dir1 = path + "/temp/" + "hgt_parameter/"
-    model_dir2 = path + "/temp/" + "AE_parameter/"
-    model_dir3 = path + "/temp/" + "AE_loss/"
-    model_dir4 = path + "/temp/" + "hgt_loss/"
-    model_dir5 = path + "/temp/" + "roc_point/"
-    model_dir6 = path + "/temp/" + "test_index/"
+    att_file1 = out_dir + "/" + base_filename + "_attention.csv"
+    path1 = out_dir + "/temp"
+    metabolic_path = out_dir + "/" + base_filename + "_metabolic_matrix.csv"
+    phylo_path = out_dir + "/" + base_filename + "_phy_matrix.csv"
+    model_dir1 = out_dir + "/temp/" + "hgt_parameter/"
+    model_dir2 = out_dir + "/temp/" + "AE_parameter/"
+    model_dir3 = out_dir + "/temp/" + "AE_loss/"
+    model_dir4 = out_dir + "/temp/" + "hgt_loss/"
+    model_dir5 = out_dir + "/temp/" + "roc_point/"
+    model_dir6 = out_dir + "/temp/" + "test_index/"
     if os.path.exists(path1) is False:
-        os.mkdir(path + "/temp")
+        os.mkdir(out_dir + "/temp")
     if os.path.exists(model_dir1) is False:
-        os.mkdir(path + "/temp" + "/hgt_parameter")
+        os.mkdir(out_dir + "/temp" + "/hgt_parameter")
     if os.path.exists(model_dir2) is False:
-        os.mkdir(path + "/temp" + "/AE_parameter")
+        os.mkdir(out_dir + "/temp" + "/AE_parameter")
     if os.path.exists(model_dir3) is False:
-        os.mkdir(path + "/temp" + "/AE_loss")
+        os.mkdir(out_dir + "/temp" + "/AE_loss")
     if os.path.exists(model_dir4) is False:
-        os.mkdir(path + "/temp" + "/hgt_loss")
+        os.mkdir(out_dir + "/temp" + "/hgt_loss")
     if os.path.exists(model_dir5) is False:
-        os.mkdir(path + "/temp" + "/roc_point")
+        os.mkdir(out_dir + "/temp" + "/roc_point")
     if os.path.exists(model_dir6) is False:
-        os.mkdir(path + "/temp" + "/test_index")
+        os.mkdir(out_dir + "/temp" + "/test_index")
 
     # load data
-    LOGGER.info("Loading species and samples information starts loading.")
+    LOGGER.info(
+        "Loading species abundance matrix, sample labels, phylogenetics and metabolic relationships to model"
+    )
+
     (
         gene_cell_matrix1,
         gene_cell_matrix,
@@ -416,7 +446,7 @@ def micah(args):
         gene_cell,
         gene_name,
         cell_name,
-    ) = load_data(args.input_dir1, sep=",", col_name=True, row_name=True)
+    ) = load_data(args.input1, args.input2, sep=",", col_name=True, row_name=True)
     Label_transform = LabelEncoder()
     Label_transform.fit(cell_label)
     cell_label_num = Label_transform.fit_transform(cell_label)
@@ -475,7 +505,7 @@ def micah(args):
     test_cell, test_label, test_cell_name = shuffle(
         test_cell, test_label, test_cell_name
     )
-    over_num = Counter(np.array(train_label)).most_common(1)[0][1]
+    # over_num = Counter(np.array(train_label)).most_common(1)[0][1]
     oversampling = RandomOverSampler(sampling_strategy="not majority", random_state=0)
     train_cell1, train_label1 = oversampling.fit_resample(train_cell11, train_label11)
     # print(train_label11)
@@ -619,7 +649,7 @@ def micah(args):
 
     gene_name11 = [str(i) for i in gene_name.astype("int64")]
     gene_name12 = [int(i) for i in gene_name]
-    species_species = pd.read_csv(args.input_dir2, sep=",", index_col=0)
+    species_species = pd.read_csv(metabolic_path, sep=",", index_col=0)
     species_species = species_species.loc[:, gene_name11]
     species_species = species_species.loc[gene_name12, :]
     species_name = species_species.columns.values
@@ -630,7 +660,7 @@ def micah(args):
     edge12 = list(g12)
     edge22 = list(c22)
 
-    species_species1 = pd.read_csv(args.input_dir3, sep=",", index_col=0)
+    species_species1 = pd.read_csv(phylo_path, sep=",", index_col=0)
     species_species1 = species_species1.loc[:, gene_name11]
     species_species1 = species_species1.loc[gene_name12, :]
     species_name1 = species_species1.columns.values
@@ -717,8 +747,7 @@ def micah(args):
 
     test_g11 = np.nonzero(test_cell)[0]
     test_c21 = np.nonzero(test_cell)[1] + test_cell.shape[0]
-    test_edge11 = list(test_g11)
-    test_edge21 = list(test_c21)
+
     # test_edge1 = test_edge11+edge12
     # test_edge2 = test_edge21+edge22
     # test_edge_index = torch.tensor([test_edge1, test_edge2], dtype=torch.long)
@@ -784,8 +813,6 @@ def micah(args):
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     # debuginfoStr('Cell Graph constructed and pruned')
-    # print(jobs[0])
-    # print(graph.years[np.random.choice(np.arange(gene_cell.shape[0]), args.batch_size, replace = False)])
     if args.reduction != "raw":
         gnn = GNN(
             conv_name=args.layer_type,
@@ -832,11 +859,10 @@ def micah(args):
         optimizer, "min", factor=0.5, patience=5, verbose=True
     )
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-    ##index = np.argwhere(train_label<5)
-    ##train_label1 = np.delete(train_label,index)
+    # index = np.argwhere(train_label<5)
+    # train_label1 = np.delete(train_label,index)
     train_label1 = torch.LongTensor(train_label.flatten()).to(device)  ##一会加个1
     test_label1 = torch.LongTensor(test_label.flatten()).to(device)
-    # print(type(gnn.parameters()))
 
     loss_function = focal_loss(alpha=weight, gamma=args.gamma, num_classes=num_type).to(
         device
@@ -873,7 +899,6 @@ def micah(args):
             if args.reduction == "raw":
                 for t in types:
                     t_i = node_dict[t][1]
-                    # print("t_i="+str(t_i))
                     node_decoded_embedding[t_i] = (
                         torch.trunc(node_decoded_embedding[t_i] * 10000000000)
                         / 10000000000
@@ -1123,32 +1148,31 @@ def micah(args):
 
 def create_argument_parser():
     LOGGER.info(
-        f"pyMEGA: A deep learning package for identifying \
-                cancer-associated tissue-resident. Version: {VERSION}"
+        f"pyMEGA: A deep learning package for identifying cancer-associated tissue-resident. Version: {VERSION}"
     )
     parser = argparse.ArgumentParser(
         description="Training GNN on species_sample graph",
     )
 
-    # Result
-    # parser.add_argument(
-    #     "-result_dir",
-    #     type=str,
-    #     default=r"/fs/ess/PCON0022/yuhan/HGT/IOM_3/co_result/",
-    #     help="The address for storing the models and optimization results.",
-    # )
+    parser.add_argument(
+        "-o",
+        default="./",
+        help="The output directory. default: current working directory.",
+    )
     parser.add_argument(
         "-epoch",
         type=int,
-        default=50,
-        help="Number of training iteration. default: 50",
+        default=30,
+        help="Number of training iteration. default: 30",
     )
 
     parser.add_argument(
         "-input1", default=None, help="The absolute path of abundance matrix."
     )
     parser.add_argument(
-        "-input2", default=None, help="The absolute path of metadata of the abundance matrix."
+        "-input2",
+        default=None,
+        help="The absolute path of metadata of the abundance matrix.",
     )
     parser.add_argument(
         "-db", default=None, help="The absolute path of Gut metebolic database."
@@ -1254,16 +1278,202 @@ def set_seed(args):
     torch.backends.cudnn.benchmark = False
 
 
-def main(argv=None):
+def create_out_dir(dir):
+    out_dir = os.path.abspath(dir)
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+        LOGGER.info(f"Directory '{out_dir}' created successfully!")
 
+    LOGGER.info(f"Output files will be save to: {out_dir}")
+    return out_dir
+
+
+def result_selection(att_path, abundance_path, out_dir, base_filename, t, pv):
+    f = open(att_path)
+    p = pd.read_csv(f, sep=",")
+
+    df = pd.read_csv(
+        abundance_path, sep=",", index_col=0
+    )  # obtain the total number of species and obtain the output path
+
+    file1 = out_dir + "/" + base_filename + "_taxa_num.csv"
+    file2 = out_dir + "/" + base_filename + "_final_taxa.txt"
+
+    # obtain the dictionary consisting of diseases and corresponding samples
+    disease_list = list(set(p["cancer_type"].tolist()))
+    value = []
+    # print (disease_list[1])
+    for i in range(len(disease_list)):
+        sample_lis = []
+        for j in range(p.shape[0]):
+            if p.iloc[j, 3] == disease_list[i]:
+                sample_lis.append(p.iloc[j, 2])
+        sample_list = list(set(sample_lis))
+        value.append(sample_list)
+    dictionary = dict(zip(disease_list, value))
+
+    # for each cancer type: key ;  obtain a dict: dict{cancer_type: [{taxa of each sample}];}
+    total_lis_taxa = []
+    for key, value in dictionary.items():
+        # print (key)
+        lis_taxa = []
+        for k in range(len(value)):
+            # for each sample value[k],
+            tem_p = p.loc[p["Sample"] == value[k]]
+            taxa_ = set()
+            for j in range(4, 12):
+                # print (tem_p.iloc[:,j])
+                a = np.array(tem_p.iloc[:, j])
+                # print (a)
+                lower_q = np.quantile(a, 0.25, interpolation="lower")
+                higher_q = np.quantile(a, 0.75, interpolation="higher")
+                q1_q3 = list(
+                    tem_p.iloc[:, j][
+                        (tem_p.iloc[:, j] > lower_q) & (tem_p.iloc[:, j] < higher_q)
+                    ]
+                )
+                mean_ = np.mean(q1_q3)
+                std_ = np.std(q1_q3)
+                # caculate threshold
+                thre_ = mean_ + std_ * t
+                taxa_j = set(tem_p["taxa_id"][tem_p.iloc[:, j] > thre_])
+                taxa_ = taxa_.union(taxa_j)
+            lis_taxa.append(taxa_)
+        total_lis_taxa.append(lis_taxa)
+    dictionary_taxa = dict(zip(disease_list, total_lis_taxa))
+
+    # calculate the number of each taxa: dict_taxa_num_all; the selected taxa number of each sample: dict_sample_taxa_num_all
+    dict_taxa_num_t = []
+    sample_taxa_num_t = []
+    for key, value in dictionary_taxa.items():
+        # print (key)
+        # print (len(value))
+        set_union = set()
+        sample_taxa_num = []
+        for i in range(len(value)):
+            set_union = set_union.union(value[i])
+            sample_taxa_num.append(len(value[i]))
+        sample_taxa_num_t.append(sample_taxa_num)
+        list_union = list(set_union)
+
+        # caculate the number of each taxa for each phenotype
+        list_num = []
+        for k in range(len(list_union)):
+            s = 0
+            for j in range(len(value)):
+                s = s + int(list_union[k] in value[j])
+                # print (int(list_union[k] in value[j]))
+            list_num.append(s)
+        dict_taxa_num = dict(zip(list_union, list_num))
+        dict_taxa_num_t.append(dict_taxa_num)
+
+    dict_taxa_num_all = dict(zip(disease_list, dict_taxa_num_t))
+    dict_sample_taxa_num_all = dict(zip(disease_list, sample_taxa_num_t))
+    # print (dict_taxa_num_all)
+    # print (dict_sample_taxa_num_all)
+
+    df1 = pd.DataFrame(dict_taxa_num_all).fillna(0)
+    df1.to_csv(file1)
+
+    # caculate the threshold for each phenotype: dict_thre = {phenotype:taxa_number_threshold}
+    list_thre = []
+    for key, value in dict_sample_taxa_num_all.items():
+        a_max = max(value)
+        b_min = min(filter(lambda x: x > 0, value))
+
+        n = df.shape[0]
+        m = a_max
+        a = math.factorial(n) // (math.factorial(m) * math.factorial(n - m))
+        n_1 = df.shape[0] - 1
+        m_1 = a_max - 1
+        b = math.factorial(n_1) // (math.factorial(m_1) * math.factorial(n_1 - m_1))
+        rate = b / a
+        m = m_1 = b_min
+        a = math.factorial(n) // (math.factorial(m) * math.factorial(n - m))
+        b = math.factorial(n_1) // (math.factorial(m_1) * math.factorial(n_1 - m_1))
+        rate_1 = b / a
+
+        p_value = 0
+        for i in range(len(value), -1, -1):
+            p_value = p_value + math.factorial(len(value)) // (
+                math.factorial(i) * math.factorial(len(value) - i)
+            ) * math.pow(rate, i) * math.pow(rate_1, len(value) - i)
+            if p_value > pv:
+                break
+        list_thre.append(i)
+    dict_thre = dict(zip(disease_list, list_thre))
+    # print("The threshold of supported samples:", dict_thre.items())
+    # print (dict_thre)
+
+    # select the significant taxa for each phenotype
+    list_final = []
+    for key, value in dict_taxa_num_all.items():
+        list_final_1 = []
+        for key_1, value_1 in value.items():
+            if value_1 > dict_thre[key]:
+                list_final_1.append(key_1)
+        list_final.append(list_final_1)
+        # print("The number of selected taxa of ", key, ": ", len(list_final_1))
+    dict_final_taxa = dict(zip(disease_list, list_final))
+
+    # print final selected taxa into a file; as well as the number of supported samples
+    f = open(file2, "w")
+    for header, elem in dict_final_taxa.items():
+        f.write(str(header) + "\t")
+        for j in range(len(elem)):
+            f.write(str(elem[j]))
+            f.write("\t")
+        f.write("\n")
+    f.close()
+    LOGGER.info(f"The number of samples with the selected taxa are saved in {file1}")
+    LOGGER.info(f"The final selected taxa of each phenotype are saved in {file2}")
+
+
+def main(argv=None):
+    start_time = time.time()
     # Parse arguments.
     parser = create_argument_parser()
     args = parser.parse_args(args=argv)
+
     LOGGER.info(f"Your settings: {args}")
-    metabolic_matrix(args.input1)
-    subprocess.run("Rscript", "taxize.r", "./*species_list.tsv")
-    phylo_matrix("./*/*_phy_relation.csv", args.input1)
-    #micah(args)
+    out_dir = create_out_dir(args.o)
+    base_filename = (args.input1).split("/")[-1].split(".")[0]
+
+    # Preprocess
+    species_list_path = get_metabolic_matrix(args.input1, out_dir)
+    result = subprocess.run(
+        ["Rscript", "r_scripts/taxize.r", species_list_path],
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        LOGGER.info(
+            "Successfully extracted NCBI taxonomy infomration using taxizedb package in R"
+        )
+    else:
+        LOGGER.error(f"{result.stderr}")
+    get_phylo_matrix(
+        f"{out_dir}/{base_filename}_phy_relation.csv", args.input1, out_dir
+    )
+
+    # Run Micah
+    micah(args, out_dir, base_filename)
+
+    # final species selection
+    result_selection(
+        f"{out_dir}/{base_filename}_attention.csv",
+        args.input1,
+        out_dir,
+        base_filename,
+        args.t,
+        args.pv,
+    )
+
+    # print running time
+    end_time = time.time()
+    total_time = end_time - start_time
+    LOGGER.info(f"Total running time: {total_time} seconds")
+
 
 if __name__ == "__main__":
     main()
