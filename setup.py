@@ -1,12 +1,7 @@
 from setuptools import setup, find_packages
 import versioneer
 
-setup_kwargs = {
-    "include_package_data": True,
-    "package_data": {
-        "": ["MANIFEST.in"]
-    }
-}
+setup_kwargs = {"include_package_data": True, "package_data": {"": ["MANIFEST.in"]}}
 
 setup(
     name="pyMEGA",

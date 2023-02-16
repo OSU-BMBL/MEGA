@@ -260,8 +260,10 @@ def check_input_params(args):
 def get_metabolic_matrix(input1, out_dir, input_db):
     location = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists(input_db):
-        input_db = os.path.join(location, 'data', 'NJS16_metabolic_relation.txt')
-        LOGGER.info(f"Provided metabolic database not exist, using built-in NJS16 metabolic database: '{input_db}'")
+        input_db = os.path.join(location, "data", "NJS16_metabolic_relation.txt")
+        LOGGER.info(
+            f"Provided metabolic database not exist, using built-in NJS16 metabolic database: '{input_db}'"
+        )
 
     df = pd.read_csv(input1, sep=",", index_col=0)
     df.index = df.index.astype(int).astype(str)
@@ -1305,7 +1307,7 @@ def create_argument_parser():
         default=3,
         help="Final species selection input number threshold. Default: 3.",
     )
-    
+
     parser.add_argument(
         "-pv",
         type=float,
@@ -1499,7 +1501,7 @@ def main(argv=None):
     # Preprocess
     species_list_path = get_metabolic_matrix(args.input1, out_dir, args.db)
     location = os.path.dirname(os.path.realpath(__file__))
-    taxize_path = os.path.join(location, 'r_scripts', 'taxize.r')
+    taxize_path = os.path.join(location, "r_scripts", "taxize.r")
 
     result = subprocess.run(
         ["Rscript", taxize_path, species_list_path],
@@ -1532,7 +1534,7 @@ def main(argv=None):
 
     # print running time
     end_time = time.time()
-    total_time = format(end_time - start_time, '.1f')
+    total_time = format(end_time - start_time, ".1f")
     LOGGER.info(f"Total running time: {total_time} seconds")
 
 
