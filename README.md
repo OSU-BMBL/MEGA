@@ -165,14 +165,13 @@ pyMEGA -h
 
 ```cre_metadata.csv```: The sample labels of the corresponding abundance matrix. It has 230 rows (samples) and 2 columns
 
-```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393).
+```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393). pyMEGA will load the built-in NJS16 metabolic database if users did not provide it. You can find the database content in [here](https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/NJS16_metabolic_relation.txt)
 
 ```{bash}
 wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_abundance_data.csv
 
 wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_metadata.csv
 
-wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/NJS16_metabolic_relation.txt
 ```
 
 ## How to run pyMEGA

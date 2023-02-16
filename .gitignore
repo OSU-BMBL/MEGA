@@ -6,7 +6,9 @@ test.sh
 cre*.csv
 cre*.tsv
 NJS16_metabolic_relation.txt
+!r_scripts/NJS16_metabolic_relation.txt
 */temp
+out/
 !./pyMEGA/data/*
 # Compiled python code
 ~.pyc

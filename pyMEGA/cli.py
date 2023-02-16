@@ -169,11 +169,11 @@ class focal_loss(nn.Module):
             assert (
                 len(alpha) == num_classes
             )  # α可以以list方式输入,size:[num_classes] 用于对不同类别精细地赋予权重
-            print("Focal_loss alpha = {},".format(alpha))
+            # print("Focal_loss alpha = {},".format(alpha))
             self.alpha = torch.Tensor(alpha)
         else:
             assert alpha < 1  # 如果α为一个常数,则降低第一类的影响,在目标检测中为第一类
-            print(" --- Focal_loss alpha = {}".format(alpha))
+            # print(" --- Focal_loss alpha = {}".format(alpha))
             self.alpha = torch.zeros(num_classes)
             self.alpha[0] += alpha
             self.alpha[1:] += (
@@ -257,8 +257,14 @@ def check_input_params(args):
     return True
 
 
-def get_metabolic_matrix(input, out_dir, input_db="NJS16_metabolic_relation.txt"):
-    df = pd.read_csv(input, sep=",", index_col=0)
+def get_metabolic_matrix(input1, out_dir, input_db):
+    location = os.path.dirname(os.path.realpath(__file__))
+    if not os.path.exists(input_db):
+        input_db = os.path.join(location, 'r_scripts', 'NJS16_metabolic_relation.txt')
+        LOGGER.info(f"Provided metabolic database not exist, using built-in NJS16 metabolic database: '{input_db}'")
+
+    df = pd.read_csv(input1, sep=",", index_col=0)
+    df.index = df.index.astype(int).astype(str)
     LOGGER.info(f"Number of species: {df.shape[0]}. Number of samples: {df.shape[1]}")
 
     species_list = df.index.values.tolist()
@@ -266,7 +272,7 @@ def get_metabolic_matrix(input, out_dir, input_db="NJS16_metabolic_relation.txt"
         lambda x: str(x), species_list
     )  # transfer the species id into str
 
-    file_name = (input).split("/")[-1].split(".")[0]
+    file_name = (input1).split("/")[-1].split(".")[0]
     # 1, 2, 4 will remove
     file_1 = out_dir + "/" + file_name + "_njs16.csv"
     file_2 = out_dir + "/" + file_name + "_njs16_norm.txt"
@@ -867,6 +873,9 @@ def micah(args, out_dir, base_filename):
     loss_function = focal_loss(alpha=weight, gamma=args.gamma, num_classes=num_type).to(
         device
     )
+
+    LOGGER.info("Graph neural network is trainning...")
+
     # k=[]
     train_loss_all = []
     train_F1 = []
@@ -1147,25 +1156,52 @@ def micah(args, out_dir, base_filename):
 
 
 def create_argument_parser():
+    """
+    Creates an argument parser for the pyMEGA package.
+
+    Returns:
+        An argument parser object with the following arguments:
+            -o: The output directory. Default: current working directory.
+            -epoch: Number of training iterations. Default: 30.
+            -input1: The absolute path of abundance matrix.
+            -input2: The absolute path of metadata of the abundance matrix.
+            -db: The absolute path of Gut metabolic database.
+            -num: The number of training data. Default: 0.9.
+            -reduction: The method for feature extraction. Default: AE.
+            -in_dim: Number of hidden dimensions for AE. Default: 256.
+            -kl_coef: Coefficient of the KL divergence regular term. Default: 0.00005.
+            -gamma: Coefficient of the focal loss. Default: 2.5.
+            -lr: Learning rate. Default: 0.003.
+            -n_hid: Number of hidden dimensions for GAE. Default: 128.
+            -n_heads: Number of attention heads. Default: 8.
+            -n_layers: Number of GNN layers. Default: 2.
+            -dropout: Dropout ratio. Default: 0.
+            -layer_type: The layer type for GAE.
+            -loss: The loss for GAE. Default: cross.
+            -cuda: The GPU device number to use. Set cuda=-1 to use CPU; cuda=0 to use GPU0. Default: 0.
+            -rep: Precision truncation. Default: iT.
+            -AEtype: AE type 1: embedding node autoencoder. 2: HGT node autoencoder. Default: 1.
+            -seed: Seed value for regressor random state initialization. Default: 0.
+            -t: Final species selection input number threshold. Default: 3.
+            -pv: Final species selection p-value threshold. Default: 0.05.
+    """
     LOGGER.info(
         f"pyMEGA: A deep learning package for identifying cancer-associated tissue-resident. Version: {VERSION}"
     )
-    parser = argparse.ArgumentParser(
-        description="Training GNN on species_sample graph",
-    )
+
+    parser = argparse.ArgumentParser(description="Training GNN on species_sample graph")
 
     parser.add_argument(
         "-o",
         default="./",
-        help="The output directory. default: current working directory.",
+        help="The output directory. Default: current working directory.",
     )
     parser.add_argument(
         "-epoch",
         type=int,
         default=30,
-        help="Number of training iteration. default: 30",
+        help="Number of training iterations. Default: 30",
     )
-
     parser.add_argument(
         "-input1", default=None, help="The absolute path of abundance matrix."
     )
@@ -1175,77 +1211,84 @@ def create_argument_parser():
         help="The absolute path of metadata of the abundance matrix.",
     )
     parser.add_argument(
-        "-db", default=None, help="The absolute path of Gut metebolic database."
+        "-db", default=None, help="The absolute path of Gut metabolic database."
     )
-    # Feature extration
+
+    # Feature extraction
     parser.add_argument(
-        "-num", type=float, default=0.9, help="the num of training data. default: 0.9"
+        "-num",
+        type=float,
+        default=0.9,
+        help="The number of training data. Default: 0.9",
     )
     parser.add_argument(
         "-reduction",
         type=str,
         default="AE",
-        help="the method for feature extraction, pca, raw. default: AE",
+        help="The method for feature extraction. Default: AE",
     )
-
     parser.add_argument(
         "-in_dim",
         type=int,
         default=256,
-        help="Number of hidden dimension (AE) default: 256",
+        help="Number of hidden dimensions for AE. Default: 256",
     )
 
     # GAE
     parser.add_argument(
         "-kl_coef",
         type=float,
-        default=0.00005,  # KL co-efficient
-        help="coefficient of regular term. default: 0.00005",
+        default=0.00005,
+        help="Coefficient of the KL divergence regular term. Default: 0.00005",
     )
     parser.add_argument(
         "-gamma",
         type=float,
         default=2.5,
-        help="coefficient of focal loss. default: 2.5",
+        help="Coefficient of the focal loss. Default: 2.5",
     )
     parser.add_argument(
-        "-lr", type=float, default=0.003, help="learning rate. default: 0.003"
+        "-lr", type=float, default=0.003, help="Learning rate. Default: 0.003"
+    )
+
+    parser.add_argument(
+        "-n_hid", type=int, default=128, help="Number of hidden dimension. Default: 128"
     )
     parser.add_argument(
-        "-n_hid", type=int, default=128, help="Number of hidden dimension. default: 128"
+        "-n_heads", type=int, default=8, help="Number of attention head. Default: 8"
     )
     parser.add_argument(
-        "-n_heads", type=int, default=8, help="Number of attention head. default: 8"
+        "-n_layers", type=int, default=2, help="Number of GNN layers. Default: 2"
     )
     parser.add_argument(
-        "-n_layers", type=int, default=2, help="Number of GNN layers. default: 2"
+        "-dropout", type=float, default=0, help="Dropout ratio. Default: 0"
     )
     parser.add_argument(
-        "-dropout", type=float, default=0, help="Dropout ratio. default: 0"
+        "-layer_type",
+        type=str,
+        default="hgt",
+        help="the layer type for GAE. Default: HGT",
     )
     parser.add_argument(
-        "-layer_type", type=str, default="hgt", help="the layer type for GAE"
-    )
-    parser.add_argument(
-        "-loss", type=str, default="cross", help="the loss for GAE. default: cross"
+        "-loss", type=str, default="cross", help="the loss for GAE. Default: cross"
     )
 
     parser.add_argument(
         "-cuda",
         type=int,
         default=1,
-        help="the GPU device number to use. Set cuda=-1 to use cpu; cuda=0 to use GPU0. default: 0",
+        help="the GPU device number to use. Set cuda=-1 to use cpu; cuda=0 to use GPU0. Default: 0",
     )
 
     parser.add_argument(
-        "-rep", type=str, default="iT", help="precision truncation. default: iT"
+        "-rep", type=str, default="iT", help="precision truncation. Default: iT"
     )
 
     parser.add_argument(
         "-AEtype",
         type=int,
         default=1,
-        help="AEtype1: embedding node autoencoder. 2:HGT node autoencode. default: 1",
+        help="AEtype1: embedding node autoencoder. 2:HGT node autoencode. Default: 1",
     )
 
     parser.add_argument(
@@ -1253,10 +1296,24 @@ def create_argument_parser():
         type=int,
         required=False,
         default=0,
-        help="Seed value for regressor random state initialization. default: 0",
+        help="Seed value for regressor random state initialization. Default: 0",
     )
-    # the weight of each cancer type in loss function
 
+    parser.add_argument(
+        "-t",
+        type=int,
+        default=3,
+        help="Final species selection input number threshold. Default: 3.",
+    )
+    
+    parser.add_argument(
+        "-pv",
+        type=float,
+        default=0.05,
+        help="Final species selection p-value threshold. Default: 0.05",
+    )
+
+    # the weight of each cancer type in loss function
     # parser.add_argument('--weight', type = float, nargs = '+', default=[0.755, 0.912, 0.696, 0.882, 0.755],
     #                   help='weight of each class in loss function')
 
@@ -1440,12 +1497,16 @@ def main(argv=None):
     base_filename = (args.input1).split("/")[-1].split(".")[0]
 
     # Preprocess
-    species_list_path = get_metabolic_matrix(args.input1, out_dir)
+    species_list_path = get_metabolic_matrix(args.input1, out_dir, args.db)
+    location = os.path.dirname(os.path.realpath(__file__))
+    taxize_path = os.path.join(location, 'r_scripts', 'taxize.r')
+
     result = subprocess.run(
-        ["Rscript", "r_scripts/taxize.r", species_list_path],
+        ["Rscript", taxize_path, species_list_path],
         capture_output=True,
         text=True,
     )
+    print(result)
     if result.returncode == 0:
         LOGGER.info(
             "Successfully extracted NCBI taxonomy infomration using taxizedb package in R"
@@ -1471,7 +1532,7 @@ def main(argv=None):
 
     # print running time
     end_time = time.time()
-    total_time = end_time - start_time
+    total_time = format(end_time - start_time, '.1f')
     LOGGER.info(f"Total running time: {total_time} seconds")
 
 
