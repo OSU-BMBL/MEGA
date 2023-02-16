@@ -260,7 +260,7 @@ def check_input_params(args):
 def get_metabolic_matrix(input1, out_dir, input_db):
     location = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists(input_db):
-        input_db = os.path.join(location, 'r_scripts', 'NJS16_metabolic_relation.txt')
+        input_db = os.path.join(location, 'data', 'NJS16_metabolic_relation.txt')
         LOGGER.info(f"Provided metabolic database not exist, using built-in NJS16 metabolic database: '{input_db}'")
 
     df = pd.read_csv(input1, sep=",", index_col=0)
@@ -1506,7 +1506,7 @@ def main(argv=None):
         capture_output=True,
         text=True,
     )
-    print(result)
+
     if result.returncode == 0:
         LOGGER.info(
             "Successfully extracted NCBI taxonomy infomration using taxizedb package in R"
