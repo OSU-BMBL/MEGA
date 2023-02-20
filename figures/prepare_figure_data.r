@@ -1,4 +1,4 @@
-setwd("C:/Users/flyku/Documents/GitHub/pyMEGA/figures/data")
+setwd("/bmbl_data/cankun_notebook/daniel/pyMEGA/figures/data")
 library(tidyverse)
 library(taxizedb)
 
@@ -6,7 +6,7 @@ library(taxizedb)
 # Set dataset file path
 metadata_file <- "cre_metadata_full.csv"
 phy_file <- "cre_abundance_data_phy_matrix.csv"
-metabolic_df <- "cre_abundance_data_metabolic_matrix.csv"
+metabolic_file <- "cre_abundance_data_metabolic_matrix.csv"
 taxa_num_file <- "cre_abundance_data_taxa_num.csv"
 final_taxa_file <- "cre_abundance_data_final_taxa.txt"
 
@@ -47,10 +47,11 @@ phy_df$X <- all_species_name
 
 dup_id <- which(duplicated(all_species_name))
 phy_df <- phy_df[-dup_id,]
+na_row <- which(is.na(phy_df$X))
+phy_df$X[na_row] <- "Empty"
 rownames(phy_df) <- phy_df$X
 phy_df <- phy_df[,c(-1, -dup_id)]
 colnames(phy_df) <- rownames(phy_df)
-
 
 write.table(phy_df, gsub("\\.csv", "_name.csv", phy_file), sep=",", quote = F, col.names = T, row.names = T)
 
@@ -60,8 +61,8 @@ df <- stack(name_res) %>%
   mutate(gene = TF)
 
 df_meta <- read.csv(metadata_file) %>%
-  dplyr::select(TCGA.code) %>%
-  group_by(TCGA.code) %>%
+  dplyr::select(cancer_name) %>%
+  group_by(cancer_name) %>%
   dplyr::count()
 
 weight_df <- this_tax_num
@@ -69,9 +70,9 @@ colnames(weight_df) <- c("species", names(name_res))
 weight_df$species <-  taxizedb::taxid2name(as.integer(weight_df$species))
 
 i="COAD"
-for (i in df_meta$TCGA.code) {
+for (i in df_meta$cancer_name) {
   this_total <- df_meta%>%
-    dplyr::filter(TCGA.code == i) %>%
+    dplyr::filter(cancer_name == i) %>%
     pull(n)
   weight_df[,i] <- as.numeric(weight_df[,i]) / as.numeric(this_total)
 }
@@ -80,7 +81,7 @@ write.table(weight_df, "weight_df.csv", sep=",", quote = F, col.names = T, row.n
 
 
 ###### Save metabolic relation
-metabolic_df <- read.csv(list.files("./", pattern = "_metabolic_matrix.csv")[1], header = T)
+metabolic_df <- read.csv(metabolic_file, header = T)
 all_species_name <- taxizedb::taxid2name(metabolic_df$X)
 metabolic_df$X <- all_species_name
 colnames(metabolic_df) <- c("X", all_species_name)
