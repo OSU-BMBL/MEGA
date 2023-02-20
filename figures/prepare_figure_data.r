@@ -1,14 +1,14 @@
-setwd('/bmbl_data/cankun_notebook/daniel/code/pymega_test/RA_norm_e50_gpu0_v1')
+setwd("C:/Users/flyku/Documents/GitHub/pyMEGA/figures/data")
 library(tidyverse)
 library(taxizedb)
 
 
 # Set dataset file path
-metadata_file <- "/bmbl_data/cankun_notebook/daniel/RA_taxonomy_matrix_metadata.csv"
-phy_file <- "RA_abundance_norm_phy_matrix.csv"
-metabolic_df <- "RA_abundance_norm_metabolic_matrix.csv"
-taxa_num_file <- "RA_abundance_norm_taxa_num.csv"
-final_taxa_file <- "RA_abundance_norm_final_taxa.txt"
+metadata_file <- "cre_metadata_full.csv"
+phy_file <- "cre_abundance_data_phy_matrix.csv"
+metabolic_df <- "cre_abundance_data_metabolic_matrix.csv"
+taxa_num_file <- "cre_abundance_data_taxa_num.csv"
+final_taxa_file <- "cre_abundance_data_final_taxa.txt"
 
 
 # Load dataset
@@ -25,8 +25,7 @@ this_name_final <- lapply(this_final, function(x) {
 label_res <- read.csv(metadata_file) %>%
   dplyr::select(2:3) %>%
   unique() %>%
-  arrange(tumor_nunmber) %>%
-  dplyr::pull(TCGA.code)
+  dplyr::pull(cancer_name)
 names(this_name_final) <- label_res
 
 id_res <- lapply(this_final, function(x){

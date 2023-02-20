@@ -1,21 +1,4 @@
-###############################################################
-#                                                             #
-# Create cancer label - species network in Cytoscape          #
-#                                                             #
-#                                                             #
-###############################################################
-
-
-# Input : 
-# 1. df : data.frame in the format of <TF, enhancer, gene>
-# 2. T2R : data.frame whose row names represent TF-enh relations, 
-#    and values denote edge weights
-# 3. R2G : data.frame whose row names represent enh-gene relations, 
-#    and values denote edge weights
-# 4. weight : which weight will be used
-
-
-setwd("F:/daniel/results")
+setwd("C:/Users/flyku/Documents/GitHub/pyMEGA/figures/data")
 require(RCy3)
 require(igraph)
 require(tidyverse)
@@ -106,7 +89,7 @@ df_to_Cyto <- function(df = NULL, T2R = NULL, R2G = NULL, nodeWeight = 'degree')
 
 
 
-name_res<- qs::qread("name_res.qsave")
+name_res<- readRDS("name_result.rds")
 e <- as.matrix(stack(name_res))
 
 
@@ -152,8 +135,7 @@ df <- df %>%
 
 dG <- df_to_Cyto(df)
 
-obj <- qs::qread("Vis_igraphs.qsave")
-dG1 <- obj$tumor
+obj <- qs::qread("../Vis_igraphs.qsave")
 
 color.ls = obj$colors
 color.ls <- c(color.ls[1:10], "#fed5ad", "#f39798", color.ls[11:12])
@@ -314,13 +296,12 @@ setEdgeLineStyleMapping(
 #bundleEdges()
 
 
-# Export image
+
 exportImage(
-  filename = filename,
+  filename = paste0("./out/all_cancer_fig1.png"),
   type = "png",
   resolution = 300,
   height = 2000,
   width = 2000,
-  overwriteFile = T
+  overwriteFile = T,
 )
-
