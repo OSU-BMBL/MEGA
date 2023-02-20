@@ -6,16 +6,13 @@ from .pyHGT.utils import *
 from .pyHGT.data import *
 from .pyHGT.model import *
 
-import sys
 import math
 import time
 import argparse
 import logging
 import os
-import time
 import numpy as np
 import pandas as pd
-from collections import Counter
 import matplotlib.pyplot as plt
 import random
 import torch
@@ -30,13 +27,11 @@ from warnings import filterwarnings
 
 filterwarnings("ignore")
 from torch_geometric.data import Data
-from sklearn.model_selection import KFold, StratifiedKFold, cross_val_score
 from imblearn.over_sampling import RandomOverSampler
 from sklearn import metrics
-from sklearn import preprocessing
 from sklearn.preprocessing import label_binarize, LabelEncoder
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.metrics import accuracy_score, f1_score, recall_score, precision_score
+from sklearn.metrics import classification_report
+from sklearn.metrics import f1_score
 from scipy import interp
 
 
@@ -606,7 +601,7 @@ def micah(args, out_dir, base_filename):
         loader2 = torchdata.DataLoader(cell, ba1)
         loader3 = torchdata.DataLoader(cell1, ba2)
         model2 = AE(dim=train_cell.shape[0]).to(device)
-        optimizer2 = optim.Adam(model2.parameters(), lr=1e-3)  # ,weight_decay=1e-2)
+        optimizer2 = optim.Adam(model2.parameters(), lr=1e-3)
         EPOCH_AE2 = 250
         for epoch in range(EPOCH_AE2):
             embedding1 = []
@@ -660,24 +655,20 @@ def micah(args, out_dir, base_filename):
     species_species = pd.read_csv(metabolic_path, sep=",", index_col=0)
     species_species = species_species.loc[:, gene_name11]
     species_species = species_species.loc[gene_name12, :]
-    species_name = species_species.columns.values
+
     species_matrix = species_species.values
     # species_matrix = np.zeros((1218,1218))
     g12 = np.nonzero(species_matrix)[0]
     c22 = np.nonzero(species_matrix)[1]
-    edge12 = list(g12)
-    edge22 = list(c22)
 
     species_species1 = pd.read_csv(phylo_path, sep=",", index_col=0)
     species_species1 = species_species1.loc[:, gene_name11]
     species_species1 = species_species1.loc[gene_name12, :]
-    species_name1 = species_species1.columns.values
+
     species_matrix1 = species_species1.values
     # species_matrix = np.zeros((1218,1218))
     g13 = np.nonzero(species_matrix1)[0]
     c23 = np.nonzero(species_matrix1)[1]
-    edge13 = list(g13)
-    edge23 = list(c23)
 
     # target_nodes = np.arange(train_cell.shape[0]+train_cell.shape[1])            #np.shape(gene_cell)[0]为gene_cell行的长度 np.shape[1]为gene_cell列的长度
     # gene cell
@@ -685,8 +676,7 @@ def micah(args, out_dir, base_filename):
     c21 = (
         np.nonzero(train_cell)[1] + train_cell.shape[0]
     )  # np.nonzero[1]返回gene_cell中列的非零元的索引
-    edge11 = list(g11)
-    edge21 = list(c21)
+
     # edge1 = edge11+edge12
     # edge2 = edge21+edge22
     # edge_index = torch.tensor([edge1, edge2], dtype=torch.long)
@@ -716,7 +706,7 @@ def micah(args, out_dir, base_filename):
     )
 
     a = np.nonzero(train_cell)[0]
-    b = np.nonzero(train_cell)[1]
+    # b = np.nonzero(train_cell)[1]
     node_type = list(np.zeros(train_cell.shape[0])) + list(np.ones(train_cell.shape[1]))
     # node_type1 = pd.DataFrame(node_type)
     # node_type1.to_csv('/fs/ess/PCON0022/yuhan/HGT/result/check_repeat/'+'node_type'+str(file0)+'.csv', sep=",")
@@ -869,7 +859,7 @@ def micah(args, out_dir, base_filename):
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
     # index = np.argwhere(train_label<5)
     # train_label1 = np.delete(train_label,index)
-    train_label1 = torch.LongTensor(train_label.flatten()).to(device)  ##一会加个1
+    train_label1 = torch.LongTensor(train_label.flatten()).to(device)
     test_label1 = torch.LongTensor(test_label.flatten()).to(device)
 
     loss_function = focal_loss(alpha=weight, gamma=args.gamma, num_classes=num_type).to(
@@ -1431,7 +1421,8 @@ def result_selection(att_path, abundance_path, out_dir, base_filename, t, pv):
     # print (dict_taxa_num_all)
     # print (dict_sample_taxa_num_all)
 
-    df1 = pd.DataFrame(dict_taxa_num_all).fillna(0)
+    df1 = pd.DataFrame(dict_taxa_num_all).fillna(0).astype(int)
+    df1.index = df1.index.astype(int).astype(str)
     df1.to_csv(file1)
 
     # caculate the threshold for each phenotype: dict_thre = {phenotype:taxa_number_threshold}
@@ -1480,7 +1471,7 @@ def result_selection(att_path, abundance_path, out_dir, base_filename, t, pv):
     for header, elem in dict_final_taxa.items():
         f.write(str(header) + "\t")
         for j in range(len(elem)):
-            f.write(str(elem[j]))
+            f.write(str(int(elem[j])))
             f.write("\t")
         f.write("\n")
     f.close()
