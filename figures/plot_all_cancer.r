@@ -90,13 +90,16 @@ df_to_Cyto <- function(df = NULL, T2R = NULL, R2G = NULL, nodeWeight = 'degree')
 
 
 name_res<- readRDS("name_result.rds")
+phy_df <- read.csv("cre_abundance_data_phy_matrix_name.csv")
+metabolic_df <- read.csv("cre_abundance_data_metabolic_matrix_name.csv")
+weight_df <- read.csv("weight_df.csv")
+color.ls = readRDS("color.ls.rds")
+color.ls <- c(color.ls[1:10], "#fed5ad", "#f39798", color.ls[11:12])
+names(color.ls)[1:12] <- names(name_res)
 e <- as.matrix(stack(name_res))
 
-
-phy_df <- read.csv("RA_taxonomy_matrix_input_abundance_data_phy_matrix_name.csv")
-metabolic_df <- read.csv("RA_taxonomy_matrix_input_abundance_data_metabolic_matrix_name.csv")
 colnames(phy_df) <- rownames(phy_df)
-dim(phy_df)
+
 
 all_species <- unique(unlist(name_res))
 keep_phy_idx <- which(rownames(phy_df) %in% all_species)
@@ -112,7 +115,6 @@ crossdatadf[,3] <- as.numeric(crossdatadf[,3])
 crossdatadf <- crossdatadf %>%
   dplyr::filter(Value > 0)
 
-weight_df <- read.csv("weight_df.csv")
 weight_df <- weight_df %>%
   gather(key = "TF", value = "weight", -species) %>%
   rename(`enhancer`=`species`) 
@@ -134,12 +136,6 @@ df <- df %>%
   dplyr::select(TF, enhancer, weight)
 
 dG <- df_to_Cyto(df)
-
-obj <- qs::qread("../Vis_igraphs.qsave")
-
-color.ls = obj$colors
-color.ls <- c(color.ls[1:10], "#fed5ad", "#f39798", color.ls[11:12])
-names(color.ls)[1:12] <- names(name_res)
 
 
 new.title = "Vis_Cyto"
@@ -199,14 +195,8 @@ setNodeBorderOpacityMapping(
 
 # Node
 
-#setNodeCustomPosition(nodeAnchor = "S",
-#                      yOffset = 3,
-#                      style.name = "SCENIC+")
-
-node.sizes <- setNames(c(rep(65, length(colors) - 1),
-                         50), names(colors))
-
-
+node.sizes <- setNames(c(rep(70, length(colors) - 1),
+                         30), names(colors))
 
 setNodeSizeMapping(
   table.column = "type",
@@ -225,8 +215,8 @@ setNodeShapeMapping(
 )
 
 
-label.sizes <- setNames(c(rep(150, length(colors) - 1),
-                          0), names(colors))
+label.sizes <- setNames(c(rep(60, length(colors) - 1),
+                          15), names(colors))
 setNodeLabelMapping(table.column = "id",
                     # table.column.values = names(label.sizes),
                     # shapes = label.sizes,
@@ -249,9 +239,8 @@ setNodeFontSizeMapping(
 
 # Edge styles
 edge.colors <- colors
-edge.colors <- rep("#f2f2f2", length(colors))
+edge.colors <- rep("#797979", length(colors))
 names(edge.colors) <- names(colors)
-#names(edge.colors)[length(edge.colors) - 1] <- "R2G"
 setEdgeColorMapping(
   table.column = "relation",
   table.column.values = names(edge.colors),
@@ -262,9 +251,7 @@ setEdgeColorMapping(
 
 weights <- 1 * (E(dG)$weight - min(E(dG)$weight)) /
   (max(E(dG)$weight) - min(E(dG)$weight))
-#quartile <- round((ntile(weights, 4) ^ 2 ) / 2) + 1
 quartile <- as.factor(ntile(weights, 4))
-#levels(quartile) <- c(0.8, 1.6, 2.4, 3.3)
 levels(quartile) <- c(2,2,2,2)
 quartile <- as.numeric(as.character(quartile))
 
@@ -292,13 +279,12 @@ setEdgeLineStyleMapping(
   line.styles = rep("SOLID", length(edge.colors)),
   style.name = "SCENIC+"
 )
-# setNodeCustomPosition(style.name = "SCENIC+")
+
+
 #bundleEdges()
 
-
-
 exportImage(
-  filename = paste0("./out/all_cancer_fig1.png"),
+  filename = paste0("./all_cancer_fig.png"),
   type = "png",
   resolution = 300,
   height = 2000,

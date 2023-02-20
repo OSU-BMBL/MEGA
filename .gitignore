@@ -4,7 +4,10 @@
 build.sh
 test.sh
 !./figures/data/*
-#cre*.csv
+cre*.csv
+weight_df.csv
+*_result.rds
+
 #cre*.tsv
 
 !./r_scripts/NJS16_metabolic_relation.txt

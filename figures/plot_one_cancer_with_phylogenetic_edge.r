@@ -1,10 +1,9 @@
-setwd("F:/daniel/results")
+setwd("C:/Users/flyku/Documents/GitHub/pyMEGA/figures/data")
 
 require(RCy3)
 require(igraph)
 require(tidyverse)
 library(reshape2)
-#library(taxizedb)
 library(Matrix)
 
 
@@ -137,47 +136,45 @@ df_to_Cyto <-
     gD <-
       igraph::set.edge.attribute(gD, "weight", index = igraph::E(gD),
                                  value = quartile)
-
-
+    
+    
     #return(igraph::simplify(gD))
     return(gD)
   }
 
 
-name_res <- qs::qread("name_res.qsave")
+name_res<- readRDS("name_result.rds")
+weight_df <- read.csv("weight_df.csv")
+color.ls = readRDS("color.ls.rds")
+color.ls <- c(color.ls[1:10], "#fed5ad", "#f39798", color.ls[11:12])
+names(color.ls)[1:12] <- names(name_res)
 
 i=1
 for(i in 1:length(name_res)) {
-  phy_df <-
-    read.csv(
-      "RA_taxonomy_matrix_input_abundance_data_phy_matrix_name.csv"
-    )
+  phy_df <- read.csv("cre_abundance_data_phy_matrix_name.csv")
   colnames(phy_df) <- rownames(phy_df)
   
-  meta_df <-
-    read.csv(
-      "RA_taxonomy_matrix_input_abundance_data_metabolic_matrix_name.csv"
-    )
+  metabolic_df <- read.csv("cre_abundance_data_metabolic_matrix_name.csv")
   this_name <- names(name_res)[i]
   this_name_res <- name_res[i]
   
   all_species <- unique(unlist(this_name_res))
-  keep_meta_idx <- which(meta_df$X %in% all_species)
-  meta_df <- meta_df[keep_meta_idx, c(1, keep_meta_idx+1)]
+  keep_meta_idx <- which(metabolic_df$X %in% all_species)
+  metabolic_df <- metabolic_df[keep_meta_idx, c(1, keep_meta_idx+1)]
   
   keep_phy_idx <- which(rownames(phy_df) %in% all_species)
   phy_df <- phy_df[keep_phy_idx, keep_phy_idx]
   
-  meta_df <- as.matrix(meta_df)
-  rownames(meta_df) <- meta_df[,1]
-  meta_df <- meta_df[,-1]
-  colnames(meta_df) <- rownames(meta_df) 
+  metabolic_df <- as.matrix(metabolic_df)
+  rownames(metabolic_df) <- metabolic_df[,1]
+  metabolic_df <- metabolic_df[,-1]
+  colnames(metabolic_df) <- rownames(metabolic_df) 
   
   # preprare metabolic network for Cytoscape
   crossdata <-
-    lapply(rownames(meta_df), function(x)
-      sapply(colnames(meta_df), function(y)
-        c(x, y, meta_df[x, y])))
+    lapply(rownames(metabolic_df), function(x)
+      sapply(colnames(metabolic_df), function(y)
+        c(x, y, metabolic_df[x, y])))
   crossdatatmp <- matrix(unlist(crossdata), nrow = 3)
   crossdatamat <- t(crossdatatmp)
   colnames(crossdatamat) <- c("From", "To", "Value")
@@ -191,27 +188,6 @@ for(i in 1:length(name_res)) {
       pmin(crossdatadf$TF, crossdatadf$enhancer),
       pmax(crossdatadf$TF, crossdatadf$enhancer)
     )), ]
-  
-  NJS16_df <- read.csv("./NJS16_name.csv", header = T, row.names = 1)
-  
-  j=1
-  njs16_net <- tibble()
-  
-  
-  for(j in 1:nrow(crossdatadf)) {
-    this_tf <- as.character(crossdatadf[j,1:2])
-
-    this_njs16 <- NJS16_df %>%
-      group_by(compound) %>%
-      dplyr::filter(all(this_tf %in% taxonomy.ID)) %>%
-      dplyr::filter(taxonomy.ID %in% this_tf) %>%
-      rename("gene" = compound, "enhancer" = taxonomy.ID) %>%
-      mutate(weight = 1) %>%
-      dplyr::select(gene, enhancer, weight)
-    
-    njs16_net <- rbind(njs16_net, this_njs16)
-    
-  }
   
   
   # prepare phylogenetic network for Cytoscape
@@ -258,8 +234,8 @@ for(i in 1:length(name_res)) {
   
   
   dG <- df_to_Cyto(df)
-
-
+  
+  
   ###################################################
   #                                                 #
   # Visualize the igraph object via Cytoscape       #
@@ -273,28 +249,15 @@ for(i in 1:length(name_res)) {
   # 3. gene.col : color of target genes
   # 4. R2G.col : color of enhancer-gene linkages
   
-
-  obj <- qs::qread("Vis_igraphs.qsave")
-  dG1 <- obj$tumor
-  
-  color.ls = obj$colors
-  color.ls <- c(color.ls[1:10], "#fed5ad", "#f39798", color.ls[11:12])
-  names(color.ls)[1:12] <- names(qs::qread("name_res.qsave"))
-  
-  
   layout = "kamada-kawai"
   opacity = 200
   edge.width = "weight"
   
-  
-  
   # Connect Cytoscape
-  
   cytoscapePing()
   
   
   # Create Cytoscape network
-  require(dplyr)
   createNetworkFromIgraph(dG, new.title = new.title)
   #layoutNetwork("radial")
   
@@ -364,7 +327,7 @@ for(i in 1:length(name_res)) {
   label.sizes <- setNames(c(20, 14, 16), names(colors))
   
   #label.sizes <- setNames(c(rep(20, length(colors) - 1),
-   #                         12), names(colors))
+  #                         12), names(colors))
   setNodeLabelMapping(table.column = "id",
                       # table.column.values = names(label.sizes),
                       # shapes = label.sizes,
@@ -380,13 +343,8 @@ for(i in 1:length(name_res)) {
     style.name = "SCENIC+"
   )
   
-  
-  
-  
-  
-  
   # Edge styles
-
+  
   edge.colors <- color.ls[c(this_name, "enhancer","gene")]
   
   
@@ -398,17 +356,17 @@ for(i in 1:length(name_res)) {
   #  style.name = "SCENIC+",
   #  mapping.type = "d"
   #)
-
+  
   shared_name1 <- paste0(this_name, " (interacts with) ", df$enhancer)
-  shared_name2 <- paste0(njs16_net$enhancer, " (interacts with) ", njs16_net$gene)
+  #shared_name2 <- paste0(njs16_net$enhancer, " (interacts with) ", njs16_net$gene)
   #shared_name2 <- c(shared_name2, paste0(crossdatadf_phylo$gene, " (interacts with) ", crossdatadf_phylo$TF))
   #shared_name3 <- paste0(crossdatadf_phylo$TF, " (interacts with) ", crossdatadf_phylo$enhancer)
   #shared_name3 <- c(shared_name3, paste0(crossdatadf_phylo$enhancer, " (interacts with) ", crossdatadf_phylo$TF))
   
   setEdgeColorMapping(
     table.column = "shared name",
-    table.column.values = c(shared_name1, shared_name2),
-    colors = c(rep(edge.colors[1], length(shared_name1)), rep(edge.colors[3], length(shared_name2))),
+    table.column.values = c(shared_name1),
+    colors = c(rep(edge.colors[1], length(shared_name1))),
     style.name = "SCENIC+",
     mapping.type = "d"
   )
@@ -454,7 +412,7 @@ for(i in 1:length(name_res)) {
   
   # Export image
   exportImage(
-    filename = paste0(this_name, "_group1_phylogenetic_fig.png"),
+    filename = paste0(this_name, "_phylogenetic_network.png"),
     type = "png",
     resolution = 300,
     height = 2000,
