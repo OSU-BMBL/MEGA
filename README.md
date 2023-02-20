@@ -255,19 +255,19 @@ pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUD
 
 ![](./img/output_tax.png)
 
-2. ```*_taxa_num.csv``` : normalized attention score for each species under each cancel label 
+1. ```*_taxa_num.csv``` : normalized attention score for each species under each cancel label
 
-3. ```*_metabolic_matrix.csv```: metabolic relationship network extracted from database
+2. ```*_metabolic_matrix.csv```: metabolic relationship network extracted from database
 
-4. ```*_phy_matrix.csv```: phylogenetic relationship network extracted from NCBI taxonomy database
+3. ```*_phy_matrix.csv```: phylogenetic relationship network extracted from NCBI taxonomy database
 
-5. ```*_attention.csv```: raw attention matrix extracted from deep learning model
+4. ```*_attention.csv```: raw attention matrix extracted from deep learning model
 
-## Visualize results using Rcy3 and Cytoscape
+## Visualize results in UpSet plot and Cytoscape figures
 
-Check the README file in ```./cytoscape``` folder:
+Check the README file in ```./figures``` folder:
 
-[./cytoscape/README.md](./cytoscape/README.md)
+[./figures/README.md](./figures/README.md)
 
 ## Acknowledgements
 
