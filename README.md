@@ -9,6 +9,9 @@ If you have any questions or feedback, please contact Qin Ma <qin.ma@osumc.edu>.
 The package is also available on PyPI: https://pypi.org/project/pyMEGA/
 
 ## News
+### v0.0.4 - 2/18/2023
+Updated:
+1. Grammar and spelling errors
 
 ### v0.0.3 - 2/16/2023
 Added:
@@ -18,7 +21,7 @@ Added:
 ### v0.0.2 - 2/3/2023
 Added:
 1. Example data using a TCGA subset
-2. Example database including NJS16 metabolic database, NCBI taxonomy database
+2. Example databases, including NJS16 metabolic database, NCBI taxonomy database
 
 ### v0.0.1 - 1/24/2023
 Added:
@@ -108,7 +111,7 @@ pyMEGA -h
 
 ### CPU version
 
-1. Create an virtual environment for pyMEGA
+1. Create a virtual environment for pyMEGA
 
 ```{bash}
 micromamba create -n pyMEGA_cpu_env python=3.7 -y
@@ -175,7 +178,7 @@ pyMEGA -h
 
 ```cre_metadata.csv```: The sample labels of the corresponding abundance matrix. It has 230 rows (samples) and 2 columns
 
-```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393). pyMEGA will load the built-in NJS16 metabolic database if users did not provide it. You can find the database content in [here](https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/NJS16_metabolic_relation.txt)
+```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393). pyMEGA will load the built-in NJS16 metabolic database if users did not provide it. You can find the database content [here](https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/NJS16_metabolic_relation.txt)
 
 ```{bash}
 wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_abundance_data.csv
@@ -233,7 +236,7 @@ pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUD
 
 ## Output files
 
-1. ```*_final_taxa.txt``` : Cancer-associated microbal signatures. This is an unstructured txt file separated by tab. This is the final output file.
+1. ```*_final_taxa.txt``` : Cancer-associated microbal signatures. This is an unstructured txt file separated by tabs. This is the final output file.
 
 ![](./img/output_tax.png)
 
