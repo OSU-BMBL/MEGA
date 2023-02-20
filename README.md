@@ -12,6 +12,7 @@ The package is also available on PyPI: https://pypi.org/project/pyMEGA/
 ### v0.0.4 - 2/18/2023
 Updated:
 1. Grammar and spelling errors
+2. Updated pyMEGA installation steps
 
 ### v0.0.3 - 2/16/2023
 Added:
@@ -62,98 +63,112 @@ Note: It is **highly suggested** to install the dependencies using [micromamba](
 **if you only have CPU available: check [CPU version](#cpu-version)**
 
 ### GPU version (CUDA 10.2)
+1. Add channels using conda
 
-1. Create a virtual environment for pyMEGA
+```
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
+
+2. Create a virtual environment for pyMEGA
 
 ```{bash}
 micromamba create -n pyMEGA_env python=3.7 -y
 ```
 
-2. Activate ```pyMEGA_env```
+3. Activate ```pyMEGA_env```
 
 ```{bash}
 micromamba activate pyMEGA_env
 ```
 
-3. install ```pytorch v1.4.0```
+4. install ```pytorch v1.4.0```
 
 ```{bash}
 micromamba install pytorch==1.4.0 cudatoolkit=10.1 -c pytorch -y
 ```
 
-4. install other required packages from pip
+5. install other required packages from pip
 
 ```{bash}
 pip install dill kneed imblearn matplotlib tqdm seaborn pipx
 ```
 
-5. install ```torch-geometric for pytorch v1.4.0```
+6. install ```torch-geometric for pytorch v1.4.0```
 
 ```{bash}
 pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-spline-conv==1.2.0 torch-geometric==1.4.3 -f https://data.pyg.org/whl/torch-1.4.0%2Bcu101.html
 ```
 
-6. install ```pyMEGA```
+7. install ```pyMEGA```
 ```{bash}
 pip install pyMEGA
 ```
 
-7. install ```R and taxizedb```
+8. install ```R and taxizedb```
 
 ```{bash}
 micromamba install R -y
 ```
 
-8. verify the installation
+9. verify the installation
 ```{bash}
 pyMEGA -h
 ```
 
 ### CPU version
 
-1. Create a virtual environment for pyMEGA
+1. Add channels using conda
+
+```{bash}
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+```
+2. Create a virtual environment for pyMEGA
 
 ```{bash}
 micromamba create -n pyMEGA_cpu_env python=3.7 -y
 ```
 
-2. Activate ```pyMEGA_cpu_env```
+3. Activate ```pyMEGA_cpu_env```
 
 ```{bash}
 micromamba activate pyMEGA_cpu_env
 ```
 
-3. install ```pytorch v1.4.0```
+4. install ```pytorch v1.4.0```
 
 ```{bash}
 #micromamba install pytorch==1.4.0 cpuonly -c pytorch -y
 pip install torch==1.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
-4. install other required packages from pip
+5. install other required packages from pip
 
 ```{bash}
 pip install dill kneed imblearn matplotlib tqdm seaborn pipx
 ```
 
-5. install ```torch-geometric for pytorch v1.4.0```
+6. install ```torch-geometric for pytorch v1.4.0```
 
 ```{bash}
 pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-spline-conv==1.2.0 torch-geometric==1.4.3 -f https://data.pyg.org/whl/torch-1.4.0%2Bcpu.html
 ```
 
-6. install ```pyMEGA```
+7. install ```pyMEGA```
 ```{bash}
 pip install pyMEGA
 ```
 
-7. install ```R and taxizedb```
+8. install ```R and taxizedb```
 
 ```{bash}
 micromamba install R -y
 ```
 
-8. verify the installation
+9. verify the installation
 ```{bash}
 pyMEGA -h
 ```
