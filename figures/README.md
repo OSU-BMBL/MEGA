@@ -31,7 +31,7 @@ Example result:
 
 ### How to use
 
-1. Open the Cytoscape desktop version. The code requires the Rcy3 package to build API conenction with the desktop Cytoscape. 
+1. Open the Cytoscape desktop version. The code requires the Rcy3 package to build an API connection with the desktop Cytoscape. 
 
 To install the Rcy3 package, run the following code in R Studio:
 ```
@@ -42,14 +42,14 @@ BiocManager::install("RCy3")
 ```
 2. Download SCENIC+.xml and import it in Cytoscape style. [Here](https://manual.cytoscape.org/en/stable/Styles.html#:~:text=You%20can%20import%20the%20sample,Import%20%E2%86%92%20Styles%20from%20File%E2%80%A6.) is the official doc that can be used to import the sample file. To import in Cytoscape style, follow the path File → Import → Styles from File.
 
-3. It is recomended to run the following code line-by-line in Rstudio since it is easier to adjust network parameters.
+3. It is recommended to run the following code line-by-line in Rstudio since it is easier to adjust network parameters.
 
 ### Plot all cancer types
 
 1. Open ```plot_all_cancer.r```. 
-2. Change the working directoy to your local directory where the data folder is located.
+2. Change the working directory to your local directory where the data folder is located.
 
-3. Run the code. In the example the node label size is 30. You may need to change the label size in the following line:
+3. Run the code. In the example, the node label size is 30. You may need to change the label size in the following line:
 
 ```
 label.sizes <- setNames(c(rep(30, length(colors) - 1), 15), names(colors))
