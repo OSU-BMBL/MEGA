@@ -1,4 +1,4 @@
-setwd("C:/Users/flyku/Documents/GitHub/pyMEGA/figures/data")
+setwd("C:/Users/megan/Desktop/BMBL/figures/data")
 require(RCy3)
 require(igraph)
 require(tidyverse)
@@ -128,7 +128,7 @@ df <- stack(name_res) %>%
 T2R <- weight_df %>%
   mutate(weights = paste0(TF, "-", enhancer)) %>%
   dplyr::select(weights, weight)
-  
+
 T2R <- T2R[-which(duplicated(T2R$weights)),]
 
 df <- df %>%
@@ -215,7 +215,7 @@ setNodeShapeMapping(
 )
 
 
-label.sizes <- setNames(c(rep(60, length(colors) - 1),
+label.sizes <- setNames(c(rep(30, length(colors) - 1),
                           15), names(colors))
 setNodeLabelMapping(table.column = "id",
                     # table.column.values = names(label.sizes),
@@ -281,11 +281,21 @@ setEdgeLineStyleMapping(
 )
 
 
+
 #bundleEdges()
 
 exportImage(
+  filename = paste0("./all_cancer_fig.pdf"),
+  type = "PDF",
+  resolution = 300,
+  height = NULL,
+  width = NULL,
+  overwriteFile = T,
+)
+
+exportImage(
   filename = paste0("./all_cancer_fig.png"),
-  type = "png",
+  type = "PNG",
   resolution = 300,
   height = 2000,
   width = 2000,

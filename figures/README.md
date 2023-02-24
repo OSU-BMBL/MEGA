@@ -47,8 +47,13 @@ BiocManager::install("RCy3")
 ### Plot all cancer types
 
 1. Open ```plot_all_cancer.r```. 
-2. Change the working directoy to your local directory where ```plot_all_cancer.r``` is located.
-3. Make sure to change the file name to reflect the ```_result.rds``` file generated in the ```prepare_figure_data.r``` code.
+2. Change the working directoy to your local directory where the data folder is located.
+
+3. Run the code. In the example the node label size is 30. You may need to change the label size in the following line:
+
+```
+label.sizes <- setNames(c(rep(30, length(colors) - 1), 15), names(colors))
+```
 
 Example output:
 
@@ -56,12 +61,16 @@ Example output:
 
 ### Plot one cancer with metabolic edge
 
-Check ```plot_one_cancer_with_metabolic_edge.r```
+1. Open ```plot_one_cancer_with_metabolic_edge.r```
+2. Change the working directory to your local directory where the data folder is located.
+3. Run the code. Three figures should be produced. An example of an output figure is seen below.
 
 ![](./img/example_metabolic_edge.png)
 
 ### Plot one cancer with phylogenetic edge
 
-Check ```plot_one_cancer_with_phylogenetic_edge.r```
+1. Open ```plot_one_cancer_with_phylogenetic_edge.r```
+2. Change the working directory to your local directory where the data folder is located.
+3. Run the code. Three figures should be produced. An example of an output figure is seen below.
 
 ![](./img/example_phylogenetic_edge.png)
