@@ -4,7 +4,7 @@ import versioneer
 setup_kwargs = {"include_package_data": True, "package_data": {"": ["MANIFEST.in"]}}
 
 setup(
-    name="MEGA",
+    name="pyMEGA",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     author="Cankun Wang",
