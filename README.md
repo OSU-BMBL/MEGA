@@ -1,18 +1,22 @@
-# pyMEGA <a href='https://github.com/OSU-BMBL/pyMEGA'><img src='img/logo.png' align="right" height="139" /></a>
+# MEGA <a href='https://github.com/OSU-BMBL/MEGA'><img src='img/logo.png' align="right" height="139" /></a>
 
 **Warning: This repository is under heavy development and the content is not final yet.**
 
-pyMEGA is a deep learning package for identifying cancer-associated tissue-resident microbes.
+MEGA is a deep learning package for identifying cancer-associated tissue-resident microbes.
 
 If you have any questions or feedback, please contact Qin Ma <qin.ma@osumc.edu>.
 
 The package is also available on PyPI: https://pypi.org/project/pyMEGA/
 
 ## News
+### v0.0.5 - 3/12/2023
+Updated:
+1. Rename to MEGA
+
 ### v0.0.4 - 2/18/2023
 Updated:
 1. Grammar and spelling errors
-2. Updated pyMEGA installation steps
+2. Updated MEGA installation steps
 
 ### v0.0.3 - 2/16/2023
 Added:
@@ -26,12 +30,12 @@ Added:
 
 ### v0.0.1 - 1/24/2023
 Added:
-1. GitHub published: https://github.com/OSU-BMBL/pyMEGA
+1. GitHub published: https://github.com/OSU-BMBL/MEGA
 2. PyPI published: https://pypi.org/project/pyMEGA/
 
 ## Dev environment
 
-pyMEGA is developed and tested in the following software and hardware environment:
+MEGA is developed and tested in the following software and hardware environment:
 
 ```{bash}
 python: 3.7.12
@@ -44,7 +48,7 @@ System: Red Hat Enterprise Linux release 8.3 (Ootpa)
 
 ## Installation
 
-The following packages and versions are required to run pyMEGA:
+The following packages and versions are required to run MEGA:
 
 - python: 3.7+
 - cuda: 10.2
@@ -71,16 +75,16 @@ conda config --add channels bioconda
 conda config --add channels conda-forge
 ```
 
-2. Create a virtual environment for pyMEGA
+2. Create a virtual environment for MEGA
 
 ```{bash}
-micromamba create -n pyMEGA_env python=3.7 -y
+micromamba create -n MEGA_env python=3.7 -y
 ```
 
-3. Activate ```pyMEGA_env```
+3. Activate ```MEGA_env```
 
 ```{bash}
-micromamba activate pyMEGA_env
+micromamba activate MEGA_env
 ```
 
 4. install ```pytorch v1.4.0```
@@ -101,9 +105,9 @@ pip install dill kneed imblearn matplotlib tqdm seaborn pipx
 pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-spline-conv==1.2.0 torch-geometric==1.4.3 -f https://data.pyg.org/whl/torch-1.4.0%2Bcu101.html
 ```
 
-7. install ```pyMEGA```
+7. install ```MEGA```
 ```{bash}
-pip install pyMEGA
+pip install MEGA
 ```
 
 8. install ```R and taxizedb```
@@ -114,7 +118,7 @@ micromamba install R -y
 
 9. verify the installation
 ```{bash}
-pyMEGA -h
+MEGA -h
 ```
 
 ### CPU version
@@ -126,16 +130,16 @@ conda config --add channels defaults
 conda config --add channels bioconda
 conda config --add channels conda-forge
 ```
-2. Create a virtual environment for pyMEGA
+2. Create a virtual environment for MEGA
 
 ```{bash}
-micromamba create -n pyMEGA_cpu_env python=3.7 -y
+micromamba create -n MEGA_cpu_env python=3.7 -y
 ```
 
-3. Activate ```pyMEGA_cpu_env```
+3. Activate ```MEGA_cpu_env```
 
 ```{bash}
-micromamba activate pyMEGA_cpu_env
+micromamba activate MEGA_cpu_env
 ```
 
 4. install ```pytorch v1.4.0```
@@ -157,7 +161,7 @@ pip install dill kneed imblearn matplotlib tqdm seaborn pipx
 pip install torch-scatter==2.0.4 torch-sparse==0.6.1 torch-cluster==1.5.4 torch-spline-conv==1.2.0 torch-geometric==1.4.3 -f https://data.pyg.org/whl/torch-1.4.0%2Bcpu.html
 ```
 
-7. install ```pyMEGA```
+7. install ```MEGA```
 ```{bash}
 pip install pyMEGA
 ```
@@ -170,7 +174,7 @@ micromamba install R -y
 
 9. verify the installation
 ```{bash}
-pyMEGA -h
+MEGA -h
 ```
 
 
@@ -178,12 +182,12 @@ pyMEGA -h
 
 ### Data format
 
-1. **Abundance matrix**: A CSV matrix. The first column represents the species IDs or official NCBI taxonomy names. The first row represents the sample names. pyMEGA will automatically try to convert the species name to IDs when needed.
+1. **Abundance matrix**: A CSV matrix. The first column represents the species IDs or official NCBI taxonomy names. The first row represents the sample names. MEGA will automatically try to convert the species name to IDs when needed.
 
 ![](./img/input_abundance.png)
 
 
-2. **Sample labels**: A CSV matrix with a header row. The first column represents the species IDs or official NCBI taxonomy names. The first row represents the sample names. pyMEGA will automatically try to convert the species name to IDs when needed.
+2. **Sample labels**: A CSV matrix with a header row. The first column represents the species IDs or official NCBI taxonomy names. The first row represents the sample names. MEGA will automatically try to convert the species name to IDs when needed.
 
 ![](./img/input_metadata.png)
 
@@ -193,16 +197,16 @@ pyMEGA -h
 
 ```cre_metadata.csv```: The sample labels of the corresponding abundance matrix. It has 230 rows (samples) and 2 columns
 
-```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393). pyMEGA will load the built-in NJS16 metabolic database if users did not provide it. You can find the database content [here](https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/NJS16_metabolic_relation.txt)
+```NJS16_metabolic_relation.txt```: Human gut metabolic relationship database (reference: https://www.nature.com/articles/ncomms15393). MEGA will load the built-in NJS16 metabolic database if users did not provide it. You can find the database content [here](https://raw.githubusercontent.com/OSU-BMBL/MEGA/master/MEGA/data/NJS16_metabolic_relation.txt)
 
 ```{bash}
-wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_abundance_data.csv
+wget https://raw.githubusercontent.com/OSU-BMBL/MEGA/master/MEGA/data/cre_abundance_data.csv
 
-wget https://raw.githubusercontent.com/OSU-BMBL/pyMEGA/master/pyMEGA/data/cre_metadata.csv
+wget https://raw.githubusercontent.com/OSU-BMBL/MEGA/master/MEGA/data/cre_metadata.csv
 
 ```
 
-## How to run pyMEGA
+## How to run MEGA
 
 We will use the [example data](#example-data) for the following tutorial.
 
@@ -220,18 +224,18 @@ Running time:
 #### GPU version
 
 ```{bash}
-pyMEGA -cuda 0 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt -o ./out
+MEGA -cuda 0 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt -o ./out
 ```
 
 #### CPU version
 
 ```{bash}
-pyMEGA -cuda -1 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt -o ./out
+MEGA -cuda -1 -input1 cre_abundance_data.csv -input2 cre_metadata.csv -db NJS16_metabolic_relation.txt -o ./out
 ```
 
 ### Enabling other parameters
 
-use ```pyMEGA -h``` to check more details about parameters
+use ```MEGA -h``` to check more details about parameters
 
 ```{bash}
 
@@ -245,7 +249,7 @@ EPOCH=30
 KL_COEF=0.00005
 THRES=3
 OUTPUT=./out
-pyMEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -o ${OUTPUT}
+MEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUDA} -n_hid ${N_HID} -lr ${LR} -kl_coef ${KL_COEF} -o ${OUTPUT}
 
 ```
 

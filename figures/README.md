@@ -1,4 +1,4 @@
-# Visualize pyMEGA results
+# Visualize MEGA results
 
 Make UpSet figures and Cytoscape Networks
 

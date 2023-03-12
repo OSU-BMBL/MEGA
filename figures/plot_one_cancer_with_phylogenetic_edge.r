@@ -1,4 +1,5 @@
-setwd("C:/Users/flyku/Documents/GitHub/pyMEGA/figures/data")
+# Please change the working directory
+setwd("C:/Users/flyku/Documents/GitHub/MEGA/figures/data")
 
 require(RCy3)
 require(igraph)

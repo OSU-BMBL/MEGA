@@ -1,4 +1,5 @@
-setwd("/bmbl_data/cankun_notebook/daniel/pyMEGA/figures/data")
+# Please change the working directory
+setwd("/bmbl_data/cankun_notebook/daniel/MEGA/figures/data")
 library(tidyverse)
 library(taxizedb)
 
