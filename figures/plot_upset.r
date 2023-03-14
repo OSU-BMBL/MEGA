@@ -1,4 +1,5 @@
-setwd("/bmbl_data/cankun_notebook/daniel/code/pymega_test/RA_norm_e50_gpu0_v1")
+# Please change the working directory
+setwd("/bmbl_data/cankun_notebook/daniel/code/mega_test/RA_norm_e50_gpu0_v1")
 library(ComplexHeatmap)
 library(ggplot2)
 

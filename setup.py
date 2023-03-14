@@ -10,11 +10,10 @@ setup(
     author="Cankun Wang",
     author_email="cankun.wang@osumc.edu",
     license="MIT",
-    description="pyMEGA is a deep learning package for identifying cancer-associated tissue-resident microbes",
-    long_description="pyMEGA is a deep learning package for identifying cancer-associated tissue-resident microbes",
+    description="MEGA is a deep learning package for identifying cancer-associated tissue-resident microbes",
+    long_description="MEGA is a deep learning package for identifying cancer-associated tissue-resident microbes",
     long_description_content_type="text/markdown",
-    url="https://github.com/OSU-BMBL/pyMEGA",
-    py_modules=["my_tool", "pyMGEA"],
+    url="https://github.com/OSU-BMBL/MEGA",
     packages=find_packages(),
     python_requires=">=3.7",
     classifiers=[
@@ -24,7 +23,7 @@ setup(
     ],
     entry_points="""
         [console_scripts]
-        pyMEGA=pyMEGA.cli:main
+        MEGA=MEGA.cli:main
     """,
     **setup_kwargs
 )

@@ -1,7 +1,7 @@
 {
 	"_NOTE": "pyMETA VSCode settings",
 	// "terminal.integrated.cwd": "pyproject",
-	"code-runner.cwd": "pyMEGA",
+	"code-runner.cwd": "MEGA",
 	"python.defaultInterpreterPath": "~/micromamba/envs/daniel_gpu_mamba/bin/python",
 	"editor.rulers": [
 		79

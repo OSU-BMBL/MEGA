@@ -402,7 +402,7 @@ def get_phylo_matrix(input1, input2, out_dir):
 def micah(args, out_dir, base_filename):
     # Set up folders
     file0 = (
-        "pyMEGA_"
+        "MEGA_"
         + str(args.epoch)
         + "_kl_para_"
         + str(args.kl_coef)
@@ -1149,7 +1149,7 @@ def micah(args, out_dir, base_filename):
 
 def create_argument_parser():
     """
-    Creates an argument parser for the pyMEGA package.
+    Creates an argument parser for the MEGA package.
 
     Returns:
         An argument parser object with the following arguments:
@@ -1178,7 +1178,7 @@ def create_argument_parser():
             -pv: Final species selection p-value threshold. Default: 0.05.
     """
     LOGGER.info(
-        f"pyMEGA: A deep learning package for identifying cancer-associated tissue-resident. Version: {VERSION}"
+        f"MEGA: A python package for identifying intratumoral microbes from the ORIEN dataset. Version: {VERSION}"
     )
 
     parser = argparse.ArgumentParser(description="Training GNN on species_sample graph")
@@ -1295,14 +1295,14 @@ def create_argument_parser():
         "-t",
         type=int,
         default=3,
-        help="Final species selection input number threshold. Default: 3.",
+        help="Final species selection input number threshold of species contribution significance. Default: 3.",
     )
 
     parser.add_argument(
         "-pv",
         type=float,
         default=0.05,
-        help="Final species selection p-value threshold. Default: 0.05",
+        help="Final species selection p-value threshold of species contribution significance. Default: 0.05",
     )
 
     # the weight of each cancer type in loss function

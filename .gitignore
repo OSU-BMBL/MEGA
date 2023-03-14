@@ -13,7 +13,7 @@ weight_df.csv
 !./r_scripts/NJS16_metabolic_relation.txt
 */temp
 out/
-!./pyMEGA/data/*
+!./MEGA/data/*
 
 
 # Compiled python code

@@ -1,5 +1,5 @@
 """
-pyMEGA initialization module.
+MEGA initialization module.
 """
 import logging
 
@@ -14,6 +14,3 @@ LOGGER.setLevel(logging.DEBUG)
 from . import _version
 
 __version__ = _version.get_versions()["version"]
-
-from . import _version
-__version__ = _version.get_versions()['version']

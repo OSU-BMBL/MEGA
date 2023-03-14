@@ -1,3 +1,3 @@
 include README.md
-include pyMEGA/data/*
-include pyMEGA/r_scripts/*
+include MEGA/data/*
+include MEGA/r_scripts/*
