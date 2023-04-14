@@ -9,6 +9,11 @@ If you have any questions or feedback, please contact Qin Ma <qin.ma@osumc.edu>.
 The package is also available on PyPI: https://pypi.org/project/pyMEGA/
 
 ## News
+
+### v0.0.5 - 4/14/2023
+Updated:
+1. Add tutorial for [circos plot](./figures/circos/README.md) and [network & upset plot](./figures/README.md)
+   
 ### v0.0.5 - 3/12/2023
 Updated:
 1. Rename to MEGA
@@ -267,11 +272,25 @@ MEGA -input1 ${INPUT1} -input2 ${INPUT2} -db ${DB} -epoch ${EPOCH} -cuda ${CUDA}
 
 4. ```*_attention.csv```: raw attention matrix extracted from deep learning model
 
-## Visualize results in UpSet plot and Cytoscape figures
+## Visualization
+
+### UpSet plot and Cytoscape figures
 
 Check the README file in ```./figures``` folder:
 
 [./figures/README.md](./figures/README.md)
+
+![Network](./figures/img/example_all_cancer.png)
+
+![Upset Plot](./figures/img/example_upset_plot.png)
+
+### Circos plot
+
+Check the README file in ```./figures/circos``` folder:
+
+[./figures/circos/README.md](./figures/README.md)
+
+![Circos Plot](./figures/circos/circos.png)
 
 ## Acknowledgements
 
