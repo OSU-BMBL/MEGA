@@ -1,8 +1,8 @@
-# MEGA <a href='https://github.com/OSU-BMBL/MEGA'><img src='img/logo.png' align="right" height="139" /></a>
+# MEGA (Microbial hEterogeneous Graph Attention) <a href='https://github.com/OSU-BMBL/MEGA'><img src='img/logo.png' align="right" height="139" /></a>
 
 **Warning: This repository is under heavy development and the content is not final yet.**
 
-MEGA is a deep learning package for identifying cancer-associated tissue-resident microbes.
+MEGA is a deep learning-based python package for identifying cancer-associated intratumoral microbes.
 
 If you have any questions or feedback, please contact Qin Ma <qin.ma@osumc.edu>.
 
