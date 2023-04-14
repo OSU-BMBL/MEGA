@@ -288,7 +288,7 @@ Check the README file in ```./figures``` folder:
 
 Check the README file in ```./figures/circos``` folder:
 
-[./figures/circos/README.md](./figures/README.md)
+[./figures/circos/README.md](./figures/circos/README.md)
 
 ![Circos Plot](./figures/circos/circos.png)
 
